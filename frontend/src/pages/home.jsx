@@ -1,7 +1,38 @@
-import React from "react";
-
+import React, { useState, useEffect } from "react";
+import { apiRequest } from "../utils/api";
 
 const Home = () => {
+    const [stats, setStats] = useState({
+        liveJobs: 0,
+        vacancies: 0,
+        companies: 0,
+        newJobs: 0
+    });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const jobs = await apiRequest('/jobs');
+                const companies = new Set(jobs.map(job => job.company)).size;
+                const newJobs = jobs.filter(job => {
+                    const jobDate = new Date(job.created_at);
+                    const weekAgo = new Date();
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    return jobDate > weekAgo;
+                }).length;
+                setStats({
+                    liveJobs: jobs.length,
+                    vacancies: jobs.length, // Assuming vacancies = jobs for now
+                    companies,
+                    newJobs
+                });
+            } catch (err) {
+                console.error('Failed to load stats', err);
+            }
+        };
+        fetchStats();
+    }, []);
+
     return (
         <main className="min-h-screen bg-gradient-to-br from-green-200 via-green-100 to-green-400 dark:bg-gray-900 flex flex-col items-center px-2 py-8">
             <div className="w-full max-w-4xl mx-auto">
@@ -17,28 +48,28 @@ const Home = () => {
                                 <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#eaf3fb] mb-1 border-2 border-[#b7d7b9]">
                                     <svg className="w-6 h-6 text-[#2d4373]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3v18" /></svg>
                                 </div>
-                                <span className="text-[#2d4373] text-base font-bold">5,831</span>
+                                <span className="text-[#2d4373] text-base font-bold">{stats.liveJobs.toLocaleString()}</span>
                                 <span className="text-gray-600 text-xs">LIVE JOBS</span>
                             </div>
                             <div className="flex flex-col items-center">
                                 <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#eaf3fb] mb-1 border-2 border-[#b7d7b9]">
                                     <svg className="w-6 h-6 text-[#2d4373]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 17v-5a4 4 0 014-4h8a4 4 0 014 4v5" /></svg>
                                 </div>
-                                <span className="text-[#2d4373] text-base font-bold">24,188+</span>
+                                <span className="text-[#2d4373] text-base font-bold">{stats.vacancies.toLocaleString()}+</span>
                                 <span className="text-gray-600 text-xs">VACANCIES</span>
                             </div>
                             <div className="flex flex-col items-center">
                                 <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#eaf3fb] mb-1 border-2 border-[#b7d7b9]">
                                     <svg className="w-6 h-6 text-[#2d4373]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a4 4 0 00-4-4h-1M7 20H2v-2a4 4 0 014-4h1m4-4V4m0 0a4 4 0 110 8 4 4 0 010-8z" /></svg>
                                 </div>
-                                <span className="text-[#2d4373] text-base font-bold">3,296</span>
+                                <span className="text-[#2d4373] text-base font-bold">{stats.companies}</span>
                                 <span className="text-gray-600 text-xs">COMPANIES</span>
                             </div>
                             <div className="flex flex-col items-center">
                                 <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#eaf3fb] mb-1 border-2 border-[#b7d7b9]">
                                     <svg className="w-6 h-6 text-[#2d4373]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3" /></svg>
                                 </div>
-                                <span className="text-[#2d4373] text-base font-bold">382</span>
+                                <span className="text-[#2d4373] text-base font-bold">{stats.newJobs}</span>
                                 <span className="text-gray-600 text-xs">NEW JOBS</span>
                             </div>
                         </div>

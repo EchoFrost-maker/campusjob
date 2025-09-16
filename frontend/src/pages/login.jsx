@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Button from "../components/Button";
+import { login } from "../utils/api";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -9,17 +10,12 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         setError("");
-        const res = await fetch("http://localhost:5000/api/users/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-        });
-        const data = await res.json();
-        if (res.ok) {
-            localStorage.setItem("token", data.token);
+        try {
+            const data = await login(email, password);
+            localStorage.setItem("token", data.access_token);
             window.location.href = "/student-profile";
-        } else {
-            setError(data.message);
+        } catch (err) {
+            setError("Invalid credentials");
         }
     };
 

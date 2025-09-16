@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Button from "../components/Button";
+import { register } from "../utils/api";
 
 const Register = () => {
     const [role, setRole] = useState("student");
@@ -13,17 +14,12 @@ const Register = () => {
         e.preventDefault();
         setError("");
         setSuccess("");
-        const res = await fetch("http://localhost:5000/api/users/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password, role }),
-        });
-        const data = await res.json();
-        if (res.ok) {
+        try {
+            await register(name, email, password, role);
             setSuccess("Registration successful! Please login.");
             setName(""); setEmail(""); setPassword("");
-        } else {
-            setError(data.message);
+        } catch (err) {
+            setError("Registration failed");
         }
     };
 
