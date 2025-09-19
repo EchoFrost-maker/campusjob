@@ -27,6 +27,10 @@ class JobController extends Controller
     // Create a new job
     public function store(Request $request)
     {
+        if ($request->user()->role !== 'employer') {
+            return response()->json(['error' => 'Forbidden: Only employers can post jobs'], 403);
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'company' => 'required|string|max:255',
@@ -36,17 +40,22 @@ class JobController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $job = Job::create([
-            'title' => $request->title,
-            'company' => $request->company,
-            'location' => $request->location,
-            'salary' => $request->salary,
-            'type' => $request->type,
-            'description' => $request->description,
-            'employer_id' => $request->user()->id,
-        ]);
+        try {
+            $job = Job::create([
+                'title' => $request->title,
+                'company' => $request->company,
+                'location' => $request->location,
+                'salary' => $request->salary,
+                'type' => $request->type,
+                'description' => $request->description,
+                'employer_id' => $request->user()->id,
+            ]);
 
-        return response()->json($job, 201);
+            return response()->json($job, 201);
+        } catch (\Exception $e) {
+            \Log::error('Job creation failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to create job', 'details' => $e->getMessage()], 500);
+        }
     }
 
     // Update a job

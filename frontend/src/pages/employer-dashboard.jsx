@@ -30,7 +30,7 @@ const EmployerDashboard = () => {
     if (error) return <div className="text-center py-12 text-red-500">{error}</div>;
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-green-200 via-green-100 to-green-400 flex flex-col items-center px-4 py-12">
+        <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex flex-col items-center px-4 py-12">
             <div className="max-w-5xl w-full grid md:grid-cols-3 gap-8">
                 <div className="md:col-span-1">
                     <ProfileCard name={user.name} role={user.role} skills={["HR", "Recruitment"]} />
@@ -55,3 +55,4 @@ const EmployerDashboard = () => {
 };
 
 export default EmployerDashboard;
+

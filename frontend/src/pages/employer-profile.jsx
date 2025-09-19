@@ -2,7 +2,7 @@ import React from "react";
 import ProfileCard from "../components/ProfileCard";
 
 const EmployerProfile = () => (
-    <main className="min-h-screen bg-gradient-to-br from-green-200 via-green-100 to-green-400 flex flex-col items-center px-4 py-12">
+    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex flex-col items-center px-4 py-12">
         <div className="max-w-2xl w-full">
             <ProfileCard name="ABC Company" role="Employer" skills={["HR", "Recruitment"]} />
             <div className="bg-white rounded-xl shadow p-6 mt-6">
@@ -20,3 +20,4 @@ const EmployerProfile = () => (
 );
 
 export default EmployerProfile;
+

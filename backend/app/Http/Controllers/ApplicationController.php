@@ -27,6 +27,7 @@ class ApplicationController extends Controller
     {
         $request->validate([
             'job_id' => 'required|exists:jobs,id',
+            'cover_letter' => 'nullable|string',
         ]);
 
         $application = Application::create([
@@ -34,6 +35,7 @@ class ApplicationController extends Controller
             'job_id' => $request->job_id,
             'status' => 'applied',
             'applied_at' => now(),
+            'cover_letter' => $request->cover_letter,
         ]);
 
         return response()->json($application, 201);

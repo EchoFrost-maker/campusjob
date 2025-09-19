@@ -19,8 +19,9 @@ return new class extends Migration
             $table->decimal('salary', 10, 2);
             $table->enum('type', ['Part-time', 'Permanent', 'Internship']);
             $table->text('description')->nullable();
+            // Removed company_logo column as it is not used in the database
+            // $table->string('company_logo')->nullable();
             $table->foreignId('employer_id')->constrained('users')->onDelete('cascade');
-            $table->timestamps();
         });
     }
 

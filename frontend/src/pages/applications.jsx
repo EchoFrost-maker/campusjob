@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { apiRequest } from "../utils/api";
+import { getApplications } from "../utils/api";
 
 const Applications = () => {
     const [applications, setApplications] = useState([]);
@@ -9,7 +9,7 @@ const Applications = () => {
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const apps = await apiRequest('/applications');
+                const apps = await getApplications();
                 setApplications(apps);
             } catch (err) {
                 setError('Failed to load applications');
@@ -24,7 +24,7 @@ const Applications = () => {
     if (error) return <div className="text-center py-12 text-red-500">{error}</div>;
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-pink-100 via-green-100 to-blue-100 flex flex-col items-center px-4 py-12">
+        <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex flex-col items-center px-4 py-12">
             <div className="max-w-3xl w-full bg-white rounded-xl shadow-lg p-8">
                 <h1 className="text-2xl font-bold text-pink-600 mb-4">Applications</h1>
                 <ul className="list-disc list-inside text-gray-700">
@@ -40,3 +40,4 @@ const Applications = () => {
 };
 
 export default Applications;
+

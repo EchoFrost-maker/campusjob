@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,8 @@ use App\Http\Controllers\PaymentController;
 */
 
 // User Authentication Routes
+use App\Http\Controllers\UserController;
+
 Route::prefix('users')->group(function () {
     // Registration
     Route::post('/register', function (Request $request) {
@@ -68,10 +71,11 @@ Route::prefix('users')->group(function () {
         ]);
     });
 
-    // Get Authenticated User
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return response()->json($request->user());
-    });
+    // Get Authenticated User Profile
+    Route::middleware('auth:sanctum')->get('/me', [UserController::class, 'showProfile']);
+
+    // Update Authenticated User Profile
+    Route::middleware('auth:sanctum')->put('/me', [UserController::class, 'updateProfile']);
 
     // Logout
     Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
@@ -93,3 +97,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin Dashboard Route
     Route::get('admin/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard']);
 });
+
+// Contact form route
+Route::post('contact', [ContactController::class, 'store']);

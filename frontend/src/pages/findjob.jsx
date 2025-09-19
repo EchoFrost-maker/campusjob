@@ -46,21 +46,21 @@ const FindJob = () => {
                             {/* Stats Row */}
                             <div className="flex flex-wrap justify-center gap-6 mb-6">
                                 <div className="flex flex-col items-center">
-                                    <div className="w-14 h-14 flex items-center justify-center rounded-full bg-[#eaf3fb] mb-1 border-2 border-[#b7d7b9]">
+                                    <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 mb-1 border-2 border-[#b7d7b9]">
                                         <svg className="w-7 h-7 text-[#2d4373]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3v18" /></svg>
                                     </div>
                                     <span className="text-[#2d4373] text-lg font-bold">{liveJobsCount}</span>
                                     <span className="text-gray-600 text-xs">LIVE JOBS</span>
                                 </div>
                                 <div className="flex flex-col items-center">
-                                    <div className="w-14 h-14 flex items-center justify-center rounded-full bg-[#eaf3fb] mb-1 border-2 border-[#b7d7b9]">
+                                    <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 mb-1 border-2 border-[#b7d7b9]">
                                         <svg className="w-7 h-7 text-[#2d4373]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 17v-5a4 4 0 014-4h8a4 4 0 014 4v5" /></svg>
                                     </div>
                                     <span className="text-[#2d4373] text-lg font-bold">{uniqueEmployers}</span>
                                     <span className="text-gray-600 text-xs">VERIFIED EMPLOYERS</span>
                                 </div>
                                 <div className="flex flex-col items-center">
-                                    <div className="w-14 h-14 flex items-center justify-center rounded-full bg-[#eaf3fb] mb-1 border-2 border-[#b7d7b9]">
+                                    <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 mb-1 border-2 border-[#b7d7b9]">
                                         <svg className="w-7 h-7 text-[#2d4373]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 8v8m8-8a8 8 0 11-16 0 8 8 0 0116 0z" /></svg>
                                     </div>
                                     <span className="text-[#2d4373] text-lg font-bold">{newJobsCount}</span>
@@ -103,3 +103,4 @@ const FindJob = () => {
 };
 
 export default FindJob;
+

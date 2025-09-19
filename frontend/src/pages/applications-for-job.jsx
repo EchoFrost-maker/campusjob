@@ -31,7 +31,7 @@ const ApplicationsForJob = () => {
     }, {});
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-green-200 via-green-100 to-green-400 flex flex-col items-center px-4 py-12">
+        <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex flex-col items-center px-4 py-12">
             <div className="max-w-3xl w-full bg-white rounded-xl shadow p-8">
                 {Object.keys(groupedApps).map(jobTitle => (
                     <div key={jobTitle} className="mb-6">
@@ -51,3 +51,4 @@ const ApplicationsForJob = () => {
 };
 
 export default ApplicationsForJob;
+

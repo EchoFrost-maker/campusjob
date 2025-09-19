@@ -39,40 +39,42 @@ import AdminDashboard from "./pages/admin-dashboard";
 function App() {
   return (
     <Router>
-      <Navbar />
-      <div className="flex min-h-screen">
-        <Sidebar />
-        <div className="flex-1 lg:ml-64">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/find-job" element={<FindJob />} />
-            <Route path="/job-details" element={<JobDetails />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/student-dashboard" element={<StudentDashboard />} />
-            <Route path="/employer-dashboard" element={<EmployerDashboard />} />
-            <Route path="/joblistings" element={<JobListings />} />
-            <Route path="/student-profile" element={<StudentProfile />} />
-            <Route path="/my-applications" element={<MyApplications />} />
-            <Route path="/payment-history" element={<PaymentHistory />} />
-            <Route path="/employer-profile" element={<EmployerProfile />} />
-            <Route path="/post-job" element={<PostJob />} />
-            <Route path="/manage-jobs" element={<ManageJobs />} />
-            <Route path="/applications-for-job" element={<ApplicationsForJob />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/skills" element={<Skills />} />
-            <Route path="/departments" element={<Departments />} />
-            <Route path="/student-skills" element={<StudentSkills />} />
-            <Route path="/job-skills" element={<JobSkills />} />
-            <Route path="/applications" element={<Applications />} />
-          </Routes>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar />
+          <div className="flex-1 lg:ml-64 overflow-auto">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/find-job" element={<FindJob />} />
+              <Route path="/job-details" element={<JobDetails />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/student-dashboard" element={<StudentDashboard />} />
+              <Route path="/employer-dashboard" element={<EmployerDashboard />} />
+              <Route path="/joblistings" element={<JobListings />} />
+              <Route path="/student-profile" element={<StudentProfile />} />
+              <Route path="/my-applications" element={<MyApplications />} />
+              <Route path="/payment-history" element={<PaymentHistory />} />
+              <Route path="/employer-profile" element={<EmployerProfile />} />
+              <Route path="/post-job" element={<PostJob />} />
+              <Route path="/manage-jobs" element={<ManageJobs />} />
+              <Route path="/applications-for-job" element={<ApplicationsForJob />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              <Route path="/skills" element={<Skills />} />
+              <Route path="/departments" element={<Departments />} />
+              <Route path="/student-skills" element={<StudentSkills />} />
+              <Route path="/job-skills" element={<JobSkills />} />
+              <Route path="/applications" element={<Applications />} />
+            </Routes>
+          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
     </Router>
   );
 }

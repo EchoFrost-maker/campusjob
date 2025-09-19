@@ -14,3 +14,4 @@ const PaymentModal = ({ open, onClose }) => (
 );
 
 export default PaymentModal;
+
