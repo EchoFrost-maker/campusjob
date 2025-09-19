@@ -1,9 +1,20 @@
 import React from "react";
 
-const Navbar = () => (
+const Navbar = ({ toggleSidebar }) => (
     <nav className="bg-gradient-to-r from-slate-900/95 via-blue-900/90 to-indigo-800/85 backdrop-blur-md shadow-2xl border-b border-blue-500/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
+                <button
+                    onClick={toggleSidebar}
+                    className="lg:hidden h-10 w-10 bg-gradient-to-br from-blue-400/30 to-indigo-500/40 rounded-lg border border-blue-400/50 flex items-center justify-center backdrop-blur-sm hover:bg-blue-500/40 transition-colors duration-200"
+                    aria-label="Toggle sidebar"
+                >
+                    <div className="flex flex-col gap-1">
+                        <div className="h-0.5 w-5 bg-blue-300 rounded"></div>
+                        <div className="h-0.5 w-5 bg-blue-300 rounded"></div>
+                        <div className="h-0.5 w-5 bg-blue-300 rounded"></div>
+                    </div>
+                </button>
                 <div className="h-10 w-10 bg-gradient-to-br from-blue-400/30 to-indigo-500/40 rounded-lg border border-blue-400/50 flex items-center justify-center backdrop-blur-sm">
                     <div className="h-6 w-6 bg-gradient-to-br from-blue-300 to-indigo-300 rounded-md opacity-80"></div>
                 </div>

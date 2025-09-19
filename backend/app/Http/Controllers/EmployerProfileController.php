@@ -10,20 +10,25 @@ class EmployerProfileController extends Controller
 {
     public function showProfile(Request $request)
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-        if ($user->role !== 'employer') {
-            return response()->json(['error' => 'Forbidden: Only employers can access this resource'], 403);
+            if ($user->role !== 'employer') {
+                return response()->json(['error' => 'Forbidden: Only employers can access this resource'], 403);
+            }
+
+            $employerProfile = $user->employerProfile;
+
+            return response()->json(array_merge(
+                $user->toArray(),
+                $employerProfile ? $employerProfile->toArray() : []
+            ))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+              ->header('Pragma', 'no-cache')
+              ->header('Expires', '0');
+        } catch (\Exception $e) {
+            \Log::error('Error fetching employer profile: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to fetch employer profile', 'error' => $e->getMessage()], 500);
         }
-
-        $employerProfile = $user->employerProfile;
-
-        return response()->json(array_merge(
-            $user->toArray(),
-            $employerProfile ? $employerProfile->toArray() : []
-        ))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-          ->header('Pragma', 'no-cache')
-          ->header('Expires', '0');
     }
 
     public function updateProfile(Request $request)

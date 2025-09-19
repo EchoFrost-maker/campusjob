@@ -1,11 +1,8 @@
-import NotificationHistory from "./pages/notification-history";
-<Route path="/notification-history" element={<NotificationHistory />} />
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Sidebar from "./components/Sidebar";
-
-
 
 import Home from "./pages/home";
 import FindJob from "./pages/findjob";
@@ -34,16 +31,20 @@ import ManageJobs from "./pages/manage-jobs";
 import ApplicationsForJob from "./pages/applications-for-job";
 import AdminDashboard from "./pages/admin-dashboard";
 
-
-
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
-        <Navbar />
+        <Navbar toggleSidebar={toggleSidebar} />
         <div className="flex flex-1 overflow-hidden">
-          <Sidebar />
-          <div className="flex-1 lg:ml-64 overflow-auto">
+          <Sidebar isOpen={sidebarOpen} />
+          <div className={`flex-1 overflow-auto ${sidebarOpen ? "lg:ml-64" : ""}`}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/find-job" element={<FindJob />} />
