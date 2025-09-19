@@ -45,9 +45,24 @@ export const register = (name, email, password, role) => apiRequest('/users/regi
     body: JSON.stringify({ name, email, password, role }),
 });
 
-export const getUser = () => apiRequest('/users/user');
+export const getUser = () => apiRequest('/users/me');
 
 export const logout = () => apiRequest('/users/logout', { method: 'POST' });
+
+export const forgotPassword = (email) => apiRequest('/users/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+});
+
+export const resetPassword = (token, email, password, passwordConfirmation) => apiRequest('/users/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({
+        token,
+        email,
+        password,
+        password_confirmation: passwordConfirmation,
+    }),
+});
 
 export const getAdminDashboard = () => apiRequest('/admin/dashboard');
 
@@ -56,7 +71,6 @@ export const getAdminDashboard = () => apiRequest('/admin/dashboard');
 export const getJobs = () => apiRequest('/jobs');
 
 export const getJob = (id) => apiRequest(`/jobs/${id}`);
-
 
 export const postJob = (jobData) => apiRequest('/jobs', {
     method: 'POST',
@@ -89,6 +103,14 @@ export const postPayment = (paymentData) => apiRequest('/payments', {
 export const getProfile = () => apiRequest('/users/me');
 
 export const updateProfile = (profileData) => apiRequest('/users/me', {
+    method: 'PUT',
+    body: JSON.stringify(profileData),
+});
+
+// Employer Profile API functions
+export const getEmployerProfile = () => apiRequest('/employer-profile');
+
+export const updateEmployerProfile = (profileData) => apiRequest('/employer-profile', {
     method: 'PUT',
     body: JSON.stringify(profileData),
 });

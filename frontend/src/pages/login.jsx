@@ -13,6 +13,7 @@ const Login = () => {
         try {
             const data = await login(email, password);
             localStorage.setItem("token", data.access_token);
+            localStorage.setItem("role", data.user.role);
             if (data.user.role === 'employer') {
                 window.location.href = "/employer-dashboard";
             } else {

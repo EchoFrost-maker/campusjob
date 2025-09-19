@@ -1,3 +1,3 @@
-- [x] Remove timestamps from jobs table migration
-- [x] Disable timestamps in Job model
-- [x] Run php artisan migrate:refresh to apply database changes
+- [x] Update login.jsx to store user role in localStorage after successful login
+- [x] Update Sidebar.jsx to conditionally render sections based on user role from localStorage
+- [ ] Test the changes by logging in as different roles

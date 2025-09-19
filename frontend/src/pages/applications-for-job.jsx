@@ -38,8 +38,15 @@ const ApplicationsForJob = () => {
                         <h1 className="text-2xl font-bold text-blue-700 mb-4">Applications for {jobTitle}</h1>
                         <ul className="list-disc list-inside text-gray-700">
                             {groupedApps[jobTitle].map(app => (
-                                <li key={app.id}>
-                                    {app.user.name} - <span className={`font-bold ${app.status === 'shortlisted' ? 'text-green-600' : 'text-blue-600'}`}>{app.status.charAt(0).toUpperCase() + app.status.slice(1)}</span>
+                                <li key={app.id} className="mb-2">
+                                    <div>
+                                        <span className="font-semibold">{app.user.name}</span> - <span className={`font-bold ${app.status === 'shortlisted' ? 'text-green-600' : 'text-blue-600'}`}>{app.status.charAt(0).toUpperCase() + app.status.slice(1)}</span>
+                                    </div>
+                                    {app.cover_letter && (
+                                        <div className="mt-1 text-gray-600 whitespace-pre-wrap border border-gray-300 rounded p-2 bg-gray-50">
+                                            {app.cover_letter}
+                                        </div>
+                                    )}
                                 </li>
                             ))}
                         </ul>

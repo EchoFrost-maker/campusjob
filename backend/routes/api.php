@@ -8,6 +8,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\EmployerProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +21,6 @@ use App\Http\Controllers\ContactController;
 |
 */
 
-// User Authentication Routes
 use App\Http\Controllers\UserController;
 
 Route::prefix('users')->group(function () {
@@ -71,11 +71,23 @@ Route::prefix('users')->group(function () {
         ]);
     });
 
-    // Get Authenticated User Profile
-    Route::middleware('auth:sanctum')->get('/me', [UserController::class, 'showProfile']);
+    // Forgot Password
+    Route::post('/forgot-password', [UserController::class, 'forgotPassword']);
 
-    // Update Authenticated User Profile
-    Route::middleware('auth:sanctum')->put('/me', [UserController::class, 'updateProfile']);
+    // Reset Password
+    Route::post('/reset-password', [UserController::class, 'resetPassword']);
+
+// Get Authenticated User Profile
+Route::middleware('auth:sanctum')->get('/me', [UserController::class, 'showProfile']);
+
+// Update Authenticated User Profile
+Route::middleware('auth:sanctum')->put('/me', [UserController::class, 'updateProfile']);
+
+// Employer Profile Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('employer-profile', [EmployerProfileController::class, 'showProfile']);
+    Route::put('employer-profile', [EmployerProfileController::class, 'updateProfile']);
+});
 
     // Logout
     Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
