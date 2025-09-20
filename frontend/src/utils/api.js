@@ -66,6 +66,40 @@ export const resetPassword = (token, email, password, passwordConfirmation) => a
 
 export const getAdminDashboard = () => apiRequest('/admin/dashboard');
 
+// Admin API functions
+export const getAdminUsers = (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return apiRequest(`/admin/users?${queryString}`);
+};
+
+export const blockUser = (userId) => apiRequest(`/admin/users/${userId}/block`, {
+    method: 'PUT',
+});
+
+export const deleteUser = (userId) => apiRequest(`/admin/users/${userId}`, {
+    method: 'DELETE',
+});
+
+export const getAdminJobs = (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return apiRequest(`/admin/jobs?${queryString}`);
+};
+
+export const deleteJob = (jobId) => apiRequest(`/admin/jobs/${jobId}`, {
+    method: 'DELETE',
+});
+
+export const getAdminStatistics = () => apiRequest('/admin/statistics');
+
+export const getEmployersWithJobs = () => apiRequest('/admin/employers-with-jobs');
+
+export const getActiveEmployers = () => apiRequest('/admin/active-employers');
+
+// Recent activity API functions
+export const getRecentUsers = () => apiRequest('/admin/recent-users');
+export const getRecentJobs = () => apiRequest('/admin/recent-jobs');
+export const getRecentApplications = () => apiRequest('/admin/recent-applications');
+
 // New API functions added for full backend connection
 
 export const getJobs = () => apiRequest('/jobs');
@@ -82,7 +116,7 @@ export const updateJob = (id, jobData) => apiRequest(`/jobs/${id}`, {
     body: JSON.stringify(jobData),
 });
 
-export const deleteJob = (id) => apiRequest(`/jobs/${id}`, {
+export const deleteJobByUser = (id) => apiRequest(`/jobs/${id}`, {
     method: 'DELETE',
 });
 

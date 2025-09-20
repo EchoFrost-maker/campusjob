@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getPayments } from "../utils/api";
+import { CreditCard, Loader2, AlertCircle } from "lucide-react";
 
 const PaymentHistory = () => {
     const [payments, setPayments] = useState([]);
@@ -20,8 +21,27 @@ const PaymentHistory = () => {
         fetchPayments();
     }, []);
 
-    if (loading) return <div className="text-center py-12">Loading payment history...</div>;
-    if (error) return <div className="text-center py-12 text-red-500">{error}</div>;
+    if (loading) return (
+        <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-2xl">
+                <div className="flex items-center gap-3 text-white">
+                    <Loader2 size={24} className="animate-spin" />
+                    <span className="text-lg">Loading payment history...</span>
+                </div>
+            </div>
+        </main>
+    );
+
+    if (error) return (
+        <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+            <div className="bg-white/10 backdrop-blur-lg border border-red-300/20 rounded-2xl p-8 shadow-2xl">
+                <div className="flex items-center gap-3 text-red-200">
+                    <AlertCircle size={24} />
+                    <span className="text-lg">{error}</span>
+                </div>
+            </div>
+        </main>
+    );
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex flex-col items-center px-4 py-12">

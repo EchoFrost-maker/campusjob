@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Mail, User, MessageSquare, Send, CheckCircle, AlertCircle } from "lucide-react";
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -38,45 +39,73 @@ const Contact = () => {
     };
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex flex-col items-center justify-center px-2 py-8">
-            <div className="max-w-2xl w-full bg-slate-800/70 backdrop-blur-lg border border-blue-500/20 rounded-xl shadow-2xl p-8">
-                <h1 className="text-3xl font-extrabold text-blue-100 mb-4 drop-shadow">Contact Us</h1>
+        <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex flex-col items-center justify-center px-2 py-8 relative overflow-hidden">
+            {/* Background Elements */}
+            <div className="absolute top-0 left-0 w-full h-full">
+                <div className="absolute top-20 left-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl"></div>
+            </div>
+            <div className="max-w-2xl w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-2xl p-8 relative z-10">
+                <div className="text-center mb-6">
+                    <Mail className="w-12 h-12 text-blue-400 mx-auto mb-2" />
+                    <h1 className="text-3xl font-extrabold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent mb-4 drop-shadow">Contact Us</h1>
+                </div>
                 <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Your Name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="px-4 py-2 bg-slate-700/50 backdrop-blur-sm border border-blue-400/20 rounded text-blue-100 placeholder-blue-300/60 focus:outline-none focus:border-blue-400/50"
-                        required
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Your Email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="px-4 py-2 bg-slate-700/50 backdrop-blur-sm border border-blue-400/20 rounded text-blue-100 placeholder-blue-300/60 focus:outline-none focus:border-blue-400/50"
-                        required
-                    />
-                    <textarea
-                        name="message"
-                        placeholder="Your Message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        className="px-4 py-2 bg-slate-700/50 backdrop-blur-sm border border-blue-400/20 rounded text-blue-100 placeholder-blue-300/60 focus:outline-none focus:border-blue-400/50"
-                        rows={4}
-                        required
-                    />
+                    <div className="relative">
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-400" />
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Your Name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-blue-100 placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
+                            required
+                        />
+                    </div>
+                    <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-400" />
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Your Email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-blue-100 placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
+                            required
+                        />
+                    </div>
+                    <div className="relative">
+                        <MessageSquare className="absolute left-3 top-3 w-5 h-5 text-blue-400" />
+                        <textarea
+                            name="message"
+                            placeholder="Your Message"
+                            value={formData.message}
+                            onChange={handleChange}
+                            className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-blue-100 placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300 resize-none"
+                            rows={4}
+                            required
+                        />
+                    </div>
                     <button
                         type="submit"
-                        className="bg-blue-600/80 backdrop-blur-sm border border-blue-500/50 text-blue-100 font-semibold rounded hover:bg-blue-500/80 hover:border-blue-400/60 transition-all duration-200 px-4 py-2"
+                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
                     >
+                        <Send size={18} />
                         Send Message
                     </button>
                 </form>
-                {status && <p className="mt-4 text-center text-blue-300">{status}</p>}
+                {status && (
+                    <div className="mt-6 flex items-center justify-center gap-3 text-blue-100">
+                        {status.includes("successfully") ? (
+                            <CheckCircle size={20} className="text-green-400" />
+                        ) : (
+                            <AlertCircle size={20} className="text-red-400" />
+                        )}
+                        <p className="text-center">{status}</p>
+                    </div>
+                )}
             </div>
         </main>
     );

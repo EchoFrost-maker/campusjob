@@ -30,7 +30,7 @@ Route::prefix('users')->group(function () {
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:student,employer',
+            'role' => 'required|in:student,employer,admin',
         ]);
 
         $user = User::create([
@@ -106,8 +106,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('applications', ApplicationController::class);
     Route::apiResource('payments', PaymentController::class);
 
-    // Admin Dashboard Route
-    Route::get('admin/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard']);
+    // Admin Routes - Protected by admin role middleware
+    Route::middleware('admin')->prefix('admin')->group(function () {
+        Route::get('dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard']);
+        Route::get('users', [\App\Http\Controllers\AdminController::class, 'getUsers']);
+        Route::put('users/{id}/block', [\App\Http\Controllers\AdminController::class, 'blockUser']);
+        Route::delete('users/{id}', [\App\Http\Controllers\AdminController::class, 'deleteUser']);
+        Route::get('jobs', [\App\Http\Controllers\AdminController::class, 'getJobs']);
+        Route::delete('jobs/{id}', [\App\Http\Controllers\AdminController::class, 'deleteJob']);
+        Route::get('statistics', [\App\Http\Controllers\AdminController::class, 'getStatistics']);
+        Route::get('employers-with-jobs', [\App\Http\Controllers\AdminController::class, 'getEmployersWithJobs']);
+        Route::get('active-employers', [\App\Http\Controllers\AdminController::class, 'getActiveEmployers']);
+    });
 });
 
 // Contact form route
