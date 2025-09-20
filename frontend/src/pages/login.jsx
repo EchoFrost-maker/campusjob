@@ -15,10 +15,16 @@ const Login = () => {
             const data = await login(email, password);
             localStorage.setItem("token", data.access_token);
             localStorage.setItem("role", data.user.role);
-            if (data.user.role === 'employer') {
+
+            // Redirect based on user role
+            if (data.user.role === 'admin') {
+                window.location.href = "/admin-dashboard";
+            } else if (data.user.role === 'employer') {
                 window.location.href = "/employer-dashboard";
+            } else if (data.user.role === 'student') {
+                window.location.href = "/student-dashboard";
             } else {
-                window.location.href = "/student-profile";
+                window.location.href = "/student-dashboard"; // Default fallback
             }
         } catch (err) {
             setError("Invalid credentials");

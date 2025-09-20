@@ -106,6 +106,13 @@ export const getRecentUsers = () => apiRequest('/admin/recent-users');
 export const getRecentJobs = () => apiRequest('/admin/recent-jobs');
 export const getRecentApplications = () => apiRequest('/admin/recent-applications');
 
+// Contact management API functions
+export const getAdminContacts = () => apiRequest('/admin/contacts');
+export const getAdminContact = (id) => apiRequest(`/admin/contacts/${id}`);
+export const deleteAdminContact = (id) => apiRequest(`/admin/contacts/${id}`, {
+    method: 'DELETE',
+});
+
 // New API functions added for full backend connection
 
 export const getJobs = () => apiRequest('/jobs');
@@ -147,6 +154,14 @@ export const updateProfile = (profileData) => apiRequest('/users/me', {
     method: 'PUT',
     body: JSON.stringify(profileData),
 });
+
+// Application management API functions
+export const getApplicationsForJob = (jobId) => apiRequest(`/applications/job/${jobId}`);
+export const updateApplicationStatus = (applicationId, statusData) => apiRequest(`/applications/${applicationId}/status`, {
+    method: 'PUT',
+    body: JSON.stringify(statusData),
+});
+export const getApplicationStats = () => apiRequest('/applications/stats/overview');
 
 // Employer Profile API functions
 export const getEmployerProfile = () => apiRequest('/users/employer-profile');

@@ -32,6 +32,9 @@ import PostJob from "./pages/post-job";
 import ManageJobs from "./pages/manage-jobs";
 import ApplicationsForJob from "./pages/applications-for-job";
 import AdminDashboard from "./pages/admin-dashboard";
+import AdminContacts from "./pages/admin-contacts";
+import EmployerApplications from "./pages/employer-applications";
+import StudentApplications from "./pages/student-applications";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -109,6 +112,21 @@ function App() {
               <Route path="/admin-dashboard" element={
                 <ProtectedRoute requiredRole="admin">
                   <AdminDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin-contacts" element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminContacts />
+                </ProtectedRoute>
+              } />
+              <Route path="/employer-applications" element={
+                <ProtectedRoute requiredRole="employer">
+                  <EmployerApplications />
+                </ProtectedRoute>
+              } />
+              <Route path="/student-applications" element={
+                <ProtectedRoute requiredRole="student">
+                  <StudentApplications />
                 </ProtectedRoute>
               } />
               <Route path="/skills" element={<Skills />} />

@@ -20,6 +20,9 @@ class Application extends Model
         'resume_path',
         'status',
         'applied_at',
+        'employer_feedback',
+        'reviewed_at',
+        'reviewed_by',
     ];
 
     public function user()

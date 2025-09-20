@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { LayoutDashboard, User, Briefcase, FileText, CreditCard, Building, Plus, Settings, Users } from "lucide-react";
+import { LayoutDashboard, User, Briefcase, FileText, CreditCard, Building, Plus, Settings, Users, MessageSquare, ClipboardList } from "lucide-react";
 
 const Sidebar = ({ isOpen }) => {
     const role = localStorage.getItem("role");
     const [compactMode, setCompactMode] = useState(false);
     const [animateItems, setAnimateItems] = useState(false);
+
 
     const toggleCompactMode = () => {
         setCompactMode(!compactMode);
@@ -89,6 +90,7 @@ const Sidebar = ({ isOpen }) => {
             </div>
 
             <nav className="flex flex-col gap-1 px-4 pb-6">
+
                 {role === "student" && (
                     <div className="mb-3">
                         <h3 className={`text-blue-300 text-xs uppercase tracking-wider font-semibold mb-2 px-2 opacity-70 transition-all duration-300 transform ${
@@ -102,7 +104,7 @@ const Sidebar = ({ isOpen }) => {
                         {renderLink("/student-dashboard", <LayoutDashboard size={18} />, "Student Dashboard", 0)}
                         {renderLink("/student-profile", <User size={18} />, "My Profile", 1)}
                         {renderLink("/joblistings", <Briefcase size={18} />, "Browse Jobs", 2)}
-                        {renderLink("/my-applications", <FileText size={18} />, "My Applications", 3)}
+                        {renderLink("/student-applications", <FileText size={18} />, "My Applications", 3)}
                         {renderLink("/payment-history", <CreditCard size={18} />, "Payment History", 4)}
                     </div>
                 )}
@@ -123,7 +125,8 @@ const Sidebar = ({ isOpen }) => {
                             {renderLink("/employer-profile", <Building size={18} />, "Company Profile", 1)}
                             {renderLink("/post-job", <Plus size={18} />, "Post a Job", 2)}
                             {renderLink("/manage-jobs", <Settings size={18} />, "Manage Jobs", 3)}
-                            {renderLink("/applications-for-job", <Users size={18} />, "Applications for Job", 4)}
+                            {renderLink("/employer-applications", <ClipboardList size={18} />, "Manage Applications", 4)}
+                            {renderLink("/applications-for-job", <Users size={18} />, "Applications for Job", 5)}
                         </div>
                     </>
                 )}
@@ -142,8 +145,10 @@ const Sidebar = ({ isOpen }) => {
                             Administration
                         </h3>
                         {renderLink("/admin-dashboard", <LayoutDashboard size={18} />, "Admin Dashboard", 0)}
+                        {renderLink("/admin-contacts", <MessageSquare size={18} />, "Contact Messages", 1)}
                     </div>
                 )}
+
             </nav>
 
                 {/* Subtle bottom accent */}

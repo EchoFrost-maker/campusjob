@@ -77,9 +77,21 @@ class JobController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $job->update($request->all());
+        try {
+            $job->update([
+                'title' => $request->title,
+                'company' => $request->company,
+                'location' => $request->location,
+                'salary' => $request->salary,
+                'type' => $request->type,
+                'description' => $request->description,
+            ]);
 
-        return response()->json($job);
+            return response()->json($job);
+        } catch (\Exception $e) {
+            \Log::error('Job update failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to update job', 'details' => $e->getMessage()], 500);
+        }
     }
 
     // Delete a job

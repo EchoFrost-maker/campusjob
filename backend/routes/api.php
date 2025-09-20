@@ -104,6 +104,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('jobs/{id}', [JobController::class, 'update']);
     Route::delete('jobs/{id}', [JobController::class, 'destroy']);
     Route::apiResource('applications', ApplicationController::class);
+
+    // Additional application routes for employers
+    Route::get('applications/job/{jobId}', [ApplicationController::class, 'getApplicationsForJob']);
+    Route::put('applications/{id}/status', [ApplicationController::class, 'updateStatus']);
+    Route::get('applications/stats/overview', [ApplicationController::class, 'getApplicationStats']);
     Route::apiResource('payments', PaymentController::class);
 
     // Admin Routes - Protected by admin role middleware
@@ -117,6 +122,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('statistics', [\App\Http\Controllers\AdminController::class, 'getStatistics']);
         Route::get('employers-with-jobs', [\App\Http\Controllers\AdminController::class, 'getEmployersWithJobs']);
         Route::get('active-employers', [\App\Http\Controllers\AdminController::class, 'getActiveEmployers']);
+
+        // Contact management routes
+        Route::get('contacts', [ContactController::class, 'index']);
+        Route::get('contacts/{id}', [ContactController::class, 'show']);
+        Route::delete('contacts/{id}', [ContactController::class, 'destroy']);
     });
 });
 

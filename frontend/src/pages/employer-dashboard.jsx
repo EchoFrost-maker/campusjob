@@ -1,11 +1,28 @@
 import React, { useState, useEffect } from "react";
 import ProfileCard from "../components/ProfileCard";
 import { getUser, apiRequest, getEmployerProfile, updateEmployerProfile } from "../utils/api";
-import { Briefcase, Building2, Edit3, Save, CheckCircle, AlertCircle, Loader2, Eye, Trash2, Users } from "lucide-react";
+import {
+    Briefcase,
+    Building2,
+    Edit3,
+    Save,
+    CheckCircle,
+    AlertCircle,
+    Loader2,
+    Eye,
+    Trash2,
+    Users,
+    TrendingUp,
+    MapPin,
+    DollarSign,
+    Clock,
+    Plus
+} from "lucide-react";
 
 const EmployerDashboard = () => {
     const [user, setUser] = useState(null);
     const [jobs, setJobs] = useState([]);
+    const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -23,12 +40,18 @@ const EmployerDashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true);
                 const userData = await getUser();
                 setUser(userData);
 
-                const jobsData = await apiRequest('/jobs');
+                const [jobsData, appsData] = await Promise.all([
+                    apiRequest('/jobs'),
+                    apiRequest('/applications')
+                ]);
+
                 const employerJobs = jobsData.filter(job => job.employer_id === userData.id);
                 setJobs(employerJobs);
+                setApplications(appsData);
 
                 // Fetch employer profile data with error handling and detailed logging
                 try {
@@ -47,6 +70,7 @@ const EmployerDashboard = () => {
                 }
             } catch (err) {
                 setError('Failed to load data');
+                console.error('Error fetching data:', err);
             } finally {
                 setLoading(false);
                 setProfileLoading(false);
@@ -54,6 +78,33 @@ const EmployerDashboard = () => {
         };
         fetchData();
     }, []);
+
+    const getDashboardStats = () => {
+        const totalJobs = jobs.length;
+        const activeJobs = jobs.filter(job => {
+            const jobApps = applications.filter(app => app.job_id === job.id);
+            return jobApps.length > 0;
+        }).length;
+        const totalApplications = applications.filter(app =>
+            jobs.some(job => job.id === app.job_id)
+        ).length;
+        const avgApplicationsPerJob = totalJobs > 0 ? Math.round(totalApplications / totalJobs) : 0;
+
+        return { totalJobs, activeJobs, totalApplications, avgApplicationsPerJob };
+    };
+
+    const getApplicationCount = (jobId) => {
+        return applications.filter(app => app.job_id === jobId).length;
+    };
+
+    const getJobTypeColor = (type) => {
+        switch (type) {
+            case 'Permanent': return 'bg-green-100 text-green-800';
+            case 'Part-time': return 'bg-blue-100 text-blue-800';
+            case 'Internship': return 'bg-purple-100 text-purple-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -73,14 +124,77 @@ const EmployerDashboard = () => {
         }
     };
 
+    const JobCard = ({ job }) => (
+        <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+            <div className="flex items-start justify-between">
+                <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <Briefcase className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900">{job.title}</h3>
+                            <p className="text-sm text-gray-600">{job.company}</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="flex items-center text-sm text-gray-600">
+                            <MapPin className="w-4 h-4 mr-2" />
+                            {job.location}
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                            <DollarSign className="w-4 h-4 mr-2" />
+                            ${job.salary?.toLocaleString()}
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                            <Clock className="w-4 h-4 mr-2" />
+                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getJobTypeColor(job.type)}`}>
+                                {job.type}
+                            </span>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                            <Users className="w-4 h-4 mr-2" />
+                            {getApplicationCount(job.id)} Applications
+                        </div>
+                    </div>
+
+                    {job.description && (
+                        <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+                            {job.description}
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                <div className="flex items-center space-x-2">
+                    <button className="flex items-center px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200">
+                        <Eye className="w-4 h-4 mr-1" />
+                        View Details
+                    </button>
+                    <button className="flex items-center px-3 py-1 text-sm text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200">
+                        <Edit3 className="w-4 h-4 mr-1" />
+                        Edit Job
+                    </button>
+                    <button className="flex items-center px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200">
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
+                    </button>
+                </div>
+                <div className="text-sm text-gray-500">
+                    ID: {job.id}
+                </div>
+            </div>
+        </div>
+    );
+
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-                <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-2xl">
-                    <div className="flex items-center gap-3 text-white">
-                        <Loader2 size={24} className="animate-spin" />
-                        <span className="text-lg">Loading your dashboard...</span>
-                    </div>
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading your dashboard...</p>
                 </div>
             </div>
         );
@@ -88,36 +202,95 @@ const EmployerDashboard = () => {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-                <div className="bg-white/10 backdrop-blur-lg border border-red-300/20 rounded-2xl p-8 shadow-2xl">
-                    <div className="flex items-center gap-3 text-red-200">
-                        <AlertCircle size={24} />
-                        <span className="text-lg">{error}</span>
-                    </div>
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <AlertCircle className="w-16 h-16 text-red-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Dashboard</h3>
+                    <p className="text-gray-500 mb-4">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                    >
+                        Try Again
+                    </button>
                 </div>
             </div>
         );
     }
 
-    return (
-        <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-            {/* Background Elements */}
-            <div className="absolute top-0 left-0 w-full h-full">
-                <div className="absolute top-20 left-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl"></div>
-            </div>
+    const stats = getDashboardStats();
 
-            <div className="relative z-10 flex flex-col items-center px-4 py-12">
-                <div className="max-w-5xl w-full grid md:grid-cols-3 gap-8">
-                    <div className="md:col-span-1">
-                        <ProfileCard name={user.name} role={user.role} skills={["HR", "Recruitment"]} />
+    return (
+        <div className="min-h-screen bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Header */}
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900">Employer Dashboard</h1>
+                    <p className="mt-2 text-gray-600">Manage your jobs and company profile</p>
+                </div>
+
+                {/* Statistics Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-600 text-sm font-medium">Total Jobs</p>
+                                <p className="text-3xl font-bold text-blue-600 mt-2">{stats.totalJobs}</p>
+                            </div>
+                            <div className="p-3 bg-blue-100 rounded-full">
+                                <Briefcase className="w-6 h-6 text-blue-600" />
+                            </div>
+                        </div>
                     </div>
-                    <div className="md:col-span-2 flex flex-col gap-6">
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-600 text-sm font-medium">Active Jobs</p>
+                                <p className="text-3xl font-bold text-green-600 mt-2">{stats.activeJobs}</p>
+                            </div>
+                            <div className="p-3 bg-green-100 rounded-full">
+                                <CheckCircle className="w-6 h-6 text-green-600" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-600 text-sm font-medium">Total Applications</p>
+                                <p className="text-3xl font-bold text-purple-600 mt-2">{stats.totalApplications}</p>
+                            </div>
+                            <div className="p-3 bg-purple-100 rounded-full">
+                                <Users className="w-6 h-6 text-purple-600" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-600 text-sm font-medium">Avg Applications/Job</p>
+                                <p className="text-3xl font-bold text-orange-600 mt-2">{stats.avgApplicationsPerJob}</p>
+                            </div>
+                            <div className="p-3 bg-orange-100 rounded-full">
+                                <TrendingUp className="w-6 h-6 text-orange-600" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Column - Profile Card */}
+                    <div className="lg:col-span-1">
+                        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                            <ProfileCard name={user?.name} role={user?.role} skills={["HR", "Recruitment"]} />
+                        </div>
+                    </div>
+
+                    {/* Right Column - Jobs and Profile */}
+                    <div className="lg:col-span-2 space-y-8">
                         {/* Success/Error Messages */}
                         {successMessage && (
-                            <div className="bg-green-500/20 backdrop-blur-lg border border-green-300/30 rounded-xl p-4 shadow-lg">
-                                <div className="flex items-center gap-3 text-green-100">
+                            <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                                <div className="flex items-center gap-3 text-green-800">
                                     <CheckCircle size={20} />
                                     <span className="font-medium">{successMessage}</span>
                                 </div>
@@ -125,8 +298,8 @@ const EmployerDashboard = () => {
                         )}
 
                         {submitError && (
-                            <div className="bg-red-500/20 backdrop-blur-lg border border-red-300/30 rounded-xl p-4 shadow-lg">
-                                <div className="flex items-center gap-3 text-red-100">
+                            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                                <div className="flex items-center gap-3 text-red-800">
                                     <AlertCircle size={20} />
                                     <span className="font-medium">{submitError}</span>
                                 </div>
@@ -134,175 +307,153 @@ const EmployerDashboard = () => {
                         )}
 
                         {/* Manage Jobs Section */}
-                        <div className="relative group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-blue-500/10 rounded-2xl blur-xl opacity-50"></div>
-                            <div className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl overflow-hidden">
-                                <div className="p-8">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <div className="flex items-center gap-3">
-                                            <Briefcase size={24} className="text-blue-400" />
-                                            <h2 className="text-2xl font-bold text-white">Manage Jobs</h2>
-                                        </div>
-                                        <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
-                                            <Briefcase size={18} />
-                                            Post New Job
-                                        </button>
-                                    </div>
-                                    {jobs.length > 0 ? (
-                                        <div className="space-y-4">
-                                            {jobs.map(job => (
-                                                <div key={job.id} className="bg-white/5 rounded-xl p-6 border border-white/10">
-                                                    <div className="flex items-start justify-between mb-4">
-                                                        <div>
-                                                            <h3 className="text-xl font-bold text-white mb-2">{job.title}</h3>
-                                                            <div className="flex items-center gap-4 text-blue-100 text-sm">
-                                                                <span className="flex items-center gap-1">
-                                                                    <CheckCircle size={16} />
-                                                                    {job.applications_count || 0} Applications
-                                                                </span>
-                                                                <span className="text-blue-200">•</span>
-                                                                <span>Posted {new Date(job.created_at).toLocaleDateString()}</span>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex gap-2">
-                                                            <button className="flex items-center gap-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-100 px-4 py-2 rounded-lg font-medium transition-all duration-300">
-                                                                <Eye size={16} />
-                                                                View
-                                                            </button>
-                                                            <button className="flex items-center gap-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-100 px-4 py-2 rounded-lg font-medium transition-all duration-300">
-                                                                <Edit3 size={16} />
-                                                                Edit
-                                                            </button>
-                                                            <button className="flex items-center gap-2 bg-red-500/20 hover:bg-red-500/30 text-red-100 px-4 py-2 rounded-lg font-medium transition-all duration-300">
-                                                                <Trash2 size={16} />
-                                                                Delete
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-4">
-                                                        <button className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 shadow-md hover:shadow-lg">
-                                                            <Users size={16} />
-                                                            View Applications ({job.applications_count || 0})
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-12">
-                                            <Briefcase size={48} className="text-blue-400 mx-auto mb-4 opacity-50" />
-                                            <p className="text-blue-100 text-lg mb-4">No jobs posted yet.</p>
-                                            <p className="text-blue-200">Start by posting your first job to attract top talent.</p>
-                                        </div>
-                                    )}
+                        <div className="bg-white rounded-xl shadow-lg p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-3">
+                                    <Briefcase className="w-6 h-6 text-blue-600" />
+                                    <h2 className="text-xl font-bold text-gray-900">Manage Jobs</h2>
                                 </div>
+                                <a
+                                    href="/post-job"
+                                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                                >
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Post New Job
+                                </a>
                             </div>
+
+                            {jobs.length > 0 ? (
+                                <div className="space-y-4">
+                                    {jobs.map(job => (
+                                        <JobCard key={job.id} job={job} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-12">
+                                    <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs posted yet</h3>
+                                    <p className="text-gray-500 mb-6">
+                                        Start by posting your first job to attract top talent.
+                                    </p>
+                                    <a
+                                        href="/post-job"
+                                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                                    >
+                                        <Plus className="w-4 h-4 mr-2" />
+                                        Post Your First Job
+                                    </a>
+                                </div>
+                            )}
                         </div>
 
                         {/* Company Profile Section */}
-                        <div className="relative group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-blue-500/10 rounded-2xl blur-xl opacity-50"></div>
-                            <div className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl overflow-hidden">
-                                <div className="p-8">
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <Building2 size={24} className="text-blue-400" />
-                                        <h2 className="text-2xl font-bold text-white mb-2">Company Profile</h2>
-                                        <p className="text-blue-100">Manage your company information</p>
+                        <div className="bg-white rounded-xl shadow-lg p-6">
+                            <div className="flex items-center gap-3 mb-6">
+                                <Building2 className="w-6 h-6 text-blue-600" />
+                                <h2 className="text-xl font-bold text-gray-900">Company Profile</h2>
+                            </div>
+
+                            {profileLoading ? (
+                                <div className="flex items-center gap-3 text-gray-600">
+                                    <Loader2 size={20} className="animate-spin" />
+                                    <span>Loading profile...</span>
+                                </div>
+                            ) : profileError ? (
+                                <div className="flex items-center gap-3 text-red-600">
+                                    <AlertCircle size={20} />
+                                    <span>{profileError}</span>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Company Name <span className="text-red-500">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="company_name"
+                                                placeholder="Enter company name"
+                                                value={companyName}
+                                                onChange={(e) => setCompanyName(e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Industry
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="industry"
+                                                placeholder="Enter industry"
+                                                value={industry}
+                                                onChange={(e) => setIndustry(e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            />
+                                        </div>
                                     </div>
 
-                                    {profileLoading ? (
-                                        <div className="flex items-center gap-3 text-white">
-                                            <Loader2 size={20} className="animate-spin" />
-                                            <span>Loading profile...</span>
-                                        </div>
-                                    ) : profileError ? (
-                                        <div className="flex items-center gap-3 text-red-100">
-                                            <AlertCircle size={20} />
-                                            <span>{profileError}</span>
-                                        </div>
-                                    ) : (
-                                        <form onSubmit={handleSubmit} className="space-y-6">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div className="space-y-2">
-                                                    <label className="text-sm font-medium text-blue-100">Company Name</label>
-                                                    <input
-                                                        type="text"
-                                                        name="company_name"
-                                                        placeholder="Enter company name"
-                                                        value={companyName}
-                                                        onChange={(e) => setCompanyName(e.target.value)}
-                                                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
-                                                        required
-                                                    />
-                                                </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Website
+                                        </label>
+                                        <input
+                                            type="url"
+                                            name="website"
+                                            placeholder="https://example.com"
+                                            value={website}
+                                            onChange={(e) => setWebsite(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        />
+                                    </div>
 
-                                                <div className="space-y-2">
-                                                    <label className="text-sm font-medium text-blue-100">Industry</label>
-                                                    <input
-                                                        type="text"
-                                                        name="industry"
-                                                        placeholder="Enter industry"
-                                                        value={industry}
-                                                        onChange={(e) => setIndustry(e.target.value)}
-                                                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
-                                                    />
-                                                </div>
-                                            </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Company Logo URL
+                                        </label>
+                                        <input
+                                            type="url"
+                                            name="company_logo"
+                                            placeholder="https://example.com/logo.png"
+                                            value={companyLogo}
+                                            onChange={(e) => setCompanyLogo(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        />
+                                    </div>
 
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-medium text-blue-100">Website</label>
-                                                <input
-                                                    type="url"
-                                                    name="website"
-                                                    placeholder="https://example.com"
-                                                    value={website}
-                                                    onChange={(e) => setWebsite(e.target.value)}
-                                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
-                                                />
-                                            </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Description
+                                        </label>
+                                        <textarea
+                                            name="description"
+                                            placeholder="Tell us about your company..."
+                                            value={description}
+                                            onChange={(e) => setDescription(e.target.value)}
+                                            rows="4"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                        />
+                                    </div>
 
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-medium text-blue-100">Company Logo URL</label>
-                                                <input
-                                                    type="url"
-                                                    name="company_logo"
-                                                    placeholder="https://example.com/logo.png"
-                                                    value={companyLogo}
-                                                    onChange={(e) => setCompanyLogo(e.target.value)}
-                                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
-                                                />
-                                            </div>
-
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-medium text-blue-100">Description</label>
-                                                <textarea
-                                                    name="description"
-                                                    placeholder="Tell us about your company..."
-                                                    value={description}
-                                                    onChange={(e) => setDescription(e.target.value)}
-                                                    rows="4"
-                                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300 resize-none"
-                                                />
-                                            </div>
-
-                                            <div className="flex gap-4 pt-4">
-                                                <button
-                                                    type="submit"
-                                                    className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-                                                >
-                                                    <Save size={18} />
-                                                    Update Profile
-                                                </button>
-                                            </div>
-                                        </form>
-                                    )}
-                                </div>
-                            </div>
+                                    <div className="flex justify-end">
+                                        <button
+                                            type="submit"
+                                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+                                        >
+                                            <Save size={18} />
+                                            Update Profile
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     );
 };
 
