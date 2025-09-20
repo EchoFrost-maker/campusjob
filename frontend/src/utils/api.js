@@ -8,10 +8,16 @@ const getAuthHeaders = () => {
 export const apiRequest = async (endpoint, options = {}) => {
     const url = `${API_BASE_URL}${endpoint}`;
     const headers = {
-        'Content-Type': 'application/json',
         ...getAuthHeaders(),
         ...options.headers,
     };
+
+    // Don't set Content-Type for FormData - let browser set it automatically
+    if (options.body instanceof FormData) {
+        delete headers['Content-Type'];
+    } else if (!options.headers || !options.headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+    }
 
     const response = await fetch(url, { ...options, headers });
     if (!response.ok) {
@@ -124,7 +130,8 @@ export const getApplications = () => apiRequest('/applications');
 
 export const postApplication = (applicationData) => apiRequest('/applications', {
     method: 'POST',
-    body: JSON.stringify(applicationData),
+    body: applicationData, // This can be FormData or JSON
+    headers: applicationData instanceof FormData ? {} : { 'Content-Type': 'application/json' }
 });
 
 export const getPayments = () => apiRequest('/payments');

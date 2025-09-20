@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/home";
 import FindJob from "./pages/findjob";
 import JobDetails from "./pages/jobdetails";
+import Apply from "./pages/apply";
 import About from "./pages/about";
 import Skills from "./pages/skills";
 import Departments from "./pages/departments";
@@ -33,7 +34,7 @@ import ApplicationsForJob from "./pages/applications-for-job";
 import AdminDashboard from "./pages/admin-dashboard";
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -41,15 +42,16 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
         <Navbar toggleSidebar={toggleSidebar} />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar isOpen={sidebarOpen} />
-          <div className={`flex-1 overflow-auto ${sidebarOpen ? "lg:ml-64" : ""}`}>
+          <div className={`flex-1 overflow-auto transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : ""}`}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/find-job" element={<FindJob />} />
-              <Route path="/job-details" element={<JobDetails />} />
+              <Route path="/job-details/:id" element={<JobDetails />} />
+              <Route path="/apply/:id" element={<Apply />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/terms" element={<Terms />} />

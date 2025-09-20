@@ -1,136 +1,73 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import Modal from "./Modal";
 import Button from "./Button";
-import { apiRequest } from "../utils/api";
 
 const JobCard = ({ id, title, company, location, salary, type }) => {
     const navigate = useNavigate();
-    const [modalOpen, setModalOpen] = useState(false);
-    const [coverLetter, setCoverLetter] = useState("");
-    const [submitting, setSubmitting] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
 
-    const [detailsModalOpen, setDetailsModalOpen] = useState(false);
-    const [jobDetails, setJobDetails] = useState(null);
-    const [detailsLoading, setDetailsLoading] = useState(false);
-    const [detailsError, setDetailsError] = useState("");
+    const handleViewDetails = () => {
+        navigate(`/job-details/${id}`);
+    };
 
     const handleApplyClick = () => {
-        setModalOpen(true);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitting(true);
-        setErrorMessage("");
-        setSuccessMessage("");
-        try {
-            await apiRequest("/applications", {
-                method: "POST",
-                body: JSON.stringify({ job_id: id, cover_letter: coverLetter }),
-            });
-            setSuccessMessage("Application submitted successfully!");
-            setCoverLetter("");
-            setTimeout(() => {
-                setModalOpen(false);
-                setSuccessMessage("");
-            }, 2000);
-        } catch (err) {
-            setErrorMessage("Failed to submit application. Please try again.");
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const handleViewDetails = async () => {
-        setDetailsLoading(true);
-        setDetailsError("");
-        try {
-            const data = await apiRequest(`/jobs/${id}`);
-            setJobDetails(data);
-            setDetailsModalOpen(true);
-        } catch (err) {
-            setDetailsError("Failed to load job details.");
-        } finally {
-            setDetailsLoading(false);
-        }
+        console.log('Apply button clicked for job:', id);
+        navigate(`/apply/${id}`);
     };
 
     return (
-        <>
-            <div className="bg-white rounded-xl shadow p-5 flex flex-col gap-2 border-t-4 border-blue-400 hover:scale-[1.02] transition-transform">
-                <h2 className="text-lg font-bold text-blue-700">{title}</h2>
-                <div className="text-gray-600 text-sm">{company} &middot; {location}</div>
-                <div className="flex gap-2 text-xs">
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">{type}</span>
-                    {salary && <span className="bg-green-100 text-green-800 px-2 py-1 rounded">৳ {salary}</span>}
+        <div className="relative group h-full">
+            {/* Glow effect */}
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+            {/* Main card */}
+            <div className="relative bg-gradient-to-br from-slate-800/95 via-slate-800/90 to-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 flex flex-col gap-4 border border-blue-500/20 hover:border-blue-400/40 transition-all duration-500 hover:scale-[1.03] hover:shadow-blue-500/20 group-hover:shadow-2xl h-full">
+                {/* Header with title and company */}
+                <div className="space-y-2">
+                    <h2 className="text-xl font-bold text-blue-300 group-hover:text-blue-200 transition-colors duration-300 leading-tight line-clamp-2">{title}</h2>
+                    <div className="flex items-center gap-2 text-slate-400 text-sm">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                        <span className="font-medium">{company}</span>
+                    </div>
+                    <div className="text-slate-500 text-sm flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        {location}
+                    </div>
                 </div>
-                <div className="flex gap-2 mt-2">
-                    <button
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2">
+                    <span className="bg-gradient-to-r from-blue-600/40 to-blue-500/40 text-blue-200 px-3 py-1.5 rounded-full text-xs font-semibold border border-blue-500/30 backdrop-blur-sm">
+                        {type}
+                    </span>
+                    {salary && (
+                        <span className="bg-gradient-to-r from-green-600/40 to-emerald-500/40 text-green-200 px-3 py-1.5 rounded-full text-xs font-semibold border border-green-500/30 backdrop-blur-sm">
+                            ৳ {salary}
+                        </span>
+                    )}
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex gap-3 mt-auto pt-4">
+                    <Button
                         onClick={handleApplyClick}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex-1"
+                        variant="primary"
+                        className="flex-1 text-sm py-2.5"
                     >
                         Apply Now
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={handleViewDetails}
-                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
+                        variant="secondary"
+                        className="flex-1 text-sm py-2.5"
                     >
                         View Details
-                    </button>
+                    </Button>
                 </div>
             </div>
-
-            <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-                <h2 className="text-xl font-bold text-blue-700 mb-4">Apply for {title}</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label htmlFor="coverLetter" className="block text-gray-700 dark:text-gray-300 mb-2 font-semibold">
-                            Cover Letter
-                        </label>
-                        <textarea
-                            id="coverLetter"
-                            value={coverLetter}
-                            onChange={(e) => setCoverLetter(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-white"
-                            rows={6}
-                            required
-                            placeholder="Tell us why you're interested in this position..."
-                        />
-                    </div>
-                    {errorMessage && <p className="text-red-600">{errorMessage}</p>}
-                    {successMessage && <p className="text-green-600">{successMessage}</p>}
-                    <div className="flex gap-2">
-                        <Button type="submit" disabled={submitting} className="flex-1">
-                            {submitting ? "Applying..." : "Submit Application"}
-                        </Button>
-                        <Button type="button" onClick={() => setModalOpen(false)} className="flex-1 bg-gray-600 hover:bg-gray-700">
-                            Cancel
-                        </Button>
-                    </div>
-                </form>
-            </Modal>
-
-            <Modal open={detailsModalOpen} onClose={() => setDetailsModalOpen(false)}>
-                {detailsLoading ? (
-                    <p>Loading job details...</p>
-                ) : detailsError ? (
-                    <p className="text-red-600">{detailsError}</p>
-                ) : jobDetails ? (
-                    <div>
-                        <h2 className="text-xl font-bold text-blue-700 mb-4">{jobDetails.title}</h2>
-                        <p className="mb-2"><strong>Company:</strong> {jobDetails.company || company}</p>
-                        <p className="mb-2"><strong>Location:</strong> {jobDetails.location || location}</p>
-                        <p className="mb-2"><strong>Salary:</strong> {jobDetails.salary ? `৳ ${jobDetails.salary}` : salary ? `৳ ${salary}` : "N/A"}</p>
-                        <p className="mb-2"><strong>Type:</strong> {jobDetails.type || type}</p>
-                        <p className="mb-4">{jobDetails.context}</p>
-                        <Button onClick={() => setDetailsModalOpen(false)}>Close</Button>
-                    </div>
-                ) : null}
-            </Modal>
-        </>
+        </div>
     );
 };
 

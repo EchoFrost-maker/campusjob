@@ -10,14 +10,14 @@ class JobController extends Controller
     // List all jobs
     public function index()
     {
-        $jobs = Job::all();
+        $jobs = Job::with('employer')->withCount('applications')->get();
         return response()->json($jobs);
     }
 
     // Show a single job
     public function show($id)
     {
-        $job = Job::find($id);
+        $job = Job::with('employer')->withCount('applications')->find($id);
         if (!$job) {
             return response()->json(['message' => 'Job not found'], 404);
         }

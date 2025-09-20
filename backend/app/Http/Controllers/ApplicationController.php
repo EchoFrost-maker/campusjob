@@ -25,20 +25,65 @@ class ApplicationController extends Controller
 
     public function store(Request $request)
     {
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            return response()->json([
+                'message' => 'You must be logged in to submit an application.',
+                'error' => 'Unauthenticated'
+            ], 401);
+        }
+
         $request->validate([
             'job_id' => 'required|exists:jobs,id',
-            'cover_letter' => 'nullable|string',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'cover_letter' => 'nullable|string|max:1000',
+            'resume' => 'nullable|file|mimes:pdf,doc,docx|max:5120', // 5MB max
         ]);
 
-        $application = Application::create([
-            'user_id' => Auth::id(),
-            'job_id' => $request->job_id,
-            'status' => 'applied',
-            'applied_at' => now(),
-            'cover_letter' => $request->cover_letter,
-        ]);
+        try {
+            // Check if user already applied for this job
+            $existingApplication = Application::where('user_id', Auth::id())
+                ->where('job_id', $request->job_id)
+                ->first();
 
-        return response()->json($application, 201);
+            if ($existingApplication) {
+                return response()->json([
+                    'message' => 'You have already applied for this job.',
+                    'error' => 'Duplicate application'
+                ], 409);
+            }
+
+            $resumePath = null;
+            if ($request->hasFile('resume')) {
+                $resumePath = $request->file('resume')->store('resumes', 'public');
+            }
+
+            $application = Application::create([
+                'user_id' => Auth::id(),
+                'job_id' => $request->job_id,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'cover_letter' => $request->cover_letter,
+                'resume_path' => $resumePath,
+                'status' => 'applied',
+                'applied_at' => now(),
+            ]);
+
+            return response()->json([
+                'message' => 'Application submitted successfully!',
+                'application' => $application
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to submit application. Please try again.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show($id)

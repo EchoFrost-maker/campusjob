@@ -3,8 +3,8 @@ import { Building2, User } from "lucide-react";
 
 const ProfileCard = ({ name, role, skills, resumeUrl, description, logo }) => (
     <div className="relative group">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-        <div className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+        <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md border border-blue-500/20 rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 hover:border-blue-400/30 transition-all duration-300 hover:scale-[1.02]">
             <div className="relative">
                 <div className="w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 p-0.5">
                     {logo ? (

@@ -1,32 +1,77 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LayoutDashboard, User, Briefcase, FileText, CreditCard, Building, Plus, Settings, Users } from "lucide-react";
 
 const Sidebar = ({ isOpen }) => {
     const role = localStorage.getItem("role");
     const [compactMode, setCompactMode] = useState(false);
+    const [animateItems, setAnimateItems] = useState(false);
 
     const toggleCompactMode = () => {
         setCompactMode(!compactMode);
     };
 
-    const renderLink = (href, icon, label) => (
+    // Trigger animations when sidebar opens
+    useEffect(() => {
+        if (isOpen) {
+            // Small delay to ensure smooth animation
+            const timer = setTimeout(() => {
+                setAnimateItems(true);
+            }, 100);
+            return () => clearTimeout(timer);
+        } else {
+            setAnimateItems(false);
+        }
+    }, [isOpen]);
+
+    const renderLink = (href, icon, label, index = 0) => (
         <a
             href={href}
-            className="text-slate-200 hover:text-blue-300 hover:bg-blue-600/20 font-medium py-2 px-3 rounded-lg transition-all duration-200 block border border-transparent hover:border-blue-400/30 flex items-center gap-3"
+            className={`text-slate-200 hover:text-blue-300 hover:bg-blue-600/20 font-medium py-2 px-3 rounded-lg transition-all duration-200 block border border-transparent hover:border-blue-400/30 flex items-center gap-3 transform ${
+                animateItems
+                    ? 'translate-x-0 opacity-100'
+                    : '-translate-x-4 opacity-0'
+            }`}
+            style={{
+                transitionDelay: animateItems ? `${index * 50}ms` : '0ms',
+                transition: 'all 0.3s ease-out'
+            }}
         >
-            {icon}
-            {!compactMode && label}
+            <span className={`transition-transform duration-200 ${animateItems ? 'scale-100' : 'scale-75'}`}>
+                {icon}
+            </span>
+            {!compactMode && (
+                <span className={`transition-all duration-300 ${animateItems ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0'}`}>
+                    {label}
+                </span>
+            )}
         </a>
     );
 
     return (
-        <aside
-            className={`bg-gradient-to-br from-slate-900/95 via-blue-900/90 to-indigo-800/85 backdrop-blur-md shadow-2xl border border-blue-500/20 h-full ${
-                compactMode ? "w-20" : "w-64"
-            } flex flex-col gap-4 fixed top-16 left-0 z-40 transition-all duration-300 ${
-                isOpen ? "translate-x-0" : "-translate-x-full"
-            } lg:${isOpen ? "flex" : "hidden"}`}
-        >
+        <>
+            {/* Backdrop Overlay */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 transition-opacity duration-300 lg:hidden"
+                    style={{
+                        opacity: isOpen ? 1 : 0,
+                        transition: 'opacity 0.3s ease-in-out'
+                    }}
+                />
+            )}
+
+            {/* Sidebar */}
+            <aside
+                className={`bg-gradient-to-br from-slate-900/95 via-blue-900/90 to-indigo-800/85 backdrop-blur-md shadow-2xl border border-blue-500/20 h-full ${
+                    compactMode ? "w-20" : "w-64"
+                } flex flex-col gap-4 fixed top-16 left-0 z-40 transition-all duration-500 ease-out ${
+                    isOpen ? "translate-x-0" : "-translate-x-full"
+                } lg:${isOpen ? "flex" : "hidden"}`}
+                style={{
+                    transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+                    transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+            >
             <div className="flex flex-col items-start w-full px-4 pt-4 pb-2">
                 {/* Toggle switch for compact mode */}
                 <button
@@ -81,11 +126,12 @@ const Sidebar = ({ isOpen }) => {
                 )}
             </nav>
 
-            {/* Subtle bottom accent */}
-            <div className="mt-auto mb-4 mx-4">
-                <div className="h-1 bg-gradient-to-r from-blue-500/30 via-indigo-500/50 to-blue-500/30 rounded-full"></div>
-            </div>
-        </aside>
+                {/* Subtle bottom accent */}
+                <div className="mt-auto mb-4 mx-4">
+                    <div className="h-1 bg-gradient-to-r from-blue-500/30 via-indigo-500/50 to-blue-500/30 rounded-full"></div>
+                </div>
+            </aside>
+        </>
     );
 };
 

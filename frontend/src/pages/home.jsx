@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getJobs } from "../utils/api";
 import { Search, Briefcase, Users, Clock, UserCheck } from "lucide-react";
+import Button from "../components/Button";
 
 const Home = () => {
     const [stats, setStats] = useState({
@@ -108,8 +109,9 @@ const Home = () => {
                                 <option className="bg-slate-800">NGO</option>
                                 <option className="bg-slate-800">University</option>
                             </select>
-                            <button
-                                className="px-8 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded shadow-lg hover:shadow-xl transition-all duration-200"
+                            <Button
+                                variant="primary"
+                                className="px-8"
                                 onClick={() => {
                                     // For now, just log the search
                                     console.log('Search:', searchQuery, filterType);
@@ -117,27 +119,27 @@ const Home = () => {
                                 }}
                             >
                                 Search
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>
 
                 {/* Features Section */}
                 <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 w-full">
-                    <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-2xl p-6 flex flex-col items-center hover:bg-white/20 hover:border-white/30 transition-all duration-300">
-                        <Briefcase className="w-10 h-10 text-blue-400 mb-3" />
-                        <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">Student Focused</h3>
-                        <p className="text-blue-200/80 text-center">Opportunities designed for students and fresh graduates.</p>
+                    <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md border border-blue-500/20 rounded-xl shadow-2xl p-6 flex flex-col items-center hover:border-blue-400/30 hover:scale-[1.02] transition-all duration-300 group">
+                        <Briefcase className="w-10 h-10 text-blue-400 mb-3 group-hover:text-blue-300 transition-colors duration-200" />
+                        <h3 className="font-bold text-lg mb-2 text-blue-300 group-hover:text-blue-200 transition-colors duration-200">Student Focused</h3>
+                        <p className="text-slate-300 text-center">Opportunities designed for students and fresh graduates.</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-2xl p-6 flex flex-col items-center hover:bg-white/20 hover:border-white/30 transition-all duration-300">
-                        <UserCheck className="w-10 h-10 text-blue-400 mb-3" />
-                        <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">Verified Employers</h3>
-                        <p className="text-blue-200/80 text-center">All job postings are from trusted and verified campus partners.</p>
+                    <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md border border-blue-500/20 rounded-xl shadow-2xl p-6 flex flex-col items-center hover:border-blue-400/30 hover:scale-[1.02] transition-all duration-300 group">
+                        <UserCheck className="w-10 h-10 text-blue-400 mb-3 group-hover:text-blue-300 transition-colors duration-200" />
+                        <h3 className="font-bold text-lg mb-2 text-blue-300 group-hover:text-blue-200 transition-colors duration-200">Verified Employers</h3>
+                        <p className="text-slate-300 text-center">All job postings are from trusted and verified campus partners.</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-2xl p-6 flex flex-col items-center hover:bg-white/20 hover:border-white/30 transition-all duration-300">
-                        <Users className="w-10 h-10 text-blue-400 mb-3" />
-                        <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">Easy Application</h3>
-                        <p className="text-blue-200/80 text-center">Apply to jobs and internships with a simple, user-friendly process.</p>
+                    <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md border border-blue-500/20 rounded-xl shadow-2xl p-6 flex flex-col items-center hover:border-blue-400/30 hover:scale-[1.02] transition-all duration-300 group">
+                        <Users className="w-10 h-10 text-blue-400 mb-3 group-hover:text-blue-300 transition-colors duration-200" />
+                        <h3 className="font-bold text-lg mb-2 text-blue-300 group-hover:text-blue-200 transition-colors duration-200">Easy Application</h3>
+                        <p className="text-slate-300 text-center">Apply to jobs and internships with a simple, user-friendly process.</p>
                     </div>
                 </section>
             </div>
