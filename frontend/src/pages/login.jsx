@@ -1,20 +1,23 @@
 import React, { useState } from "react";
 import Button from "../components/Button";
 import { login } from "../utils/api";
+import { useAuth } from "../utils/authContext";
 import { Mail, Lock, LogIn } from "lucide-react";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const { login: authLogin } = useAuth();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setError("");
         try {
             const data = await login(email, password);
-            localStorage.setItem("token", data.access_token);
-            localStorage.setItem("role", data.user.role);
+
+            // Use auth context login method
+            authLogin(data.user, data.access_token, data.user.role);
 
             // Redirect based on user role
             if (data.user.role === 'admin') {

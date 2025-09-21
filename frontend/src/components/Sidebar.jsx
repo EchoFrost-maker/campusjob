@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { LayoutDashboard, User, Briefcase, FileText, CreditCard, Building, Plus, Settings, Users, MessageSquare, ClipboardList } from "lucide-react";
+import { LayoutDashboard, User, Briefcase, FileText, CreditCard, Building, Plus, Settings, Users, MessageSquare, ClipboardList, LogOut } from "lucide-react";
+import { useAuth } from "../utils/authContext";
 
 const Sidebar = ({ isOpen }) => {
     const role = localStorage.getItem("role");
     const [compactMode, setCompactMode] = useState(false);
     const [animateItems, setAnimateItems] = useState(false);
+    const { logout } = useAuth();
 
 
     const toggleCompactMode = () => {
@@ -33,8 +35,7 @@ const Sidebar = ({ isOpen }) => {
                     : '-translate-x-4 opacity-0'
             }`}
             style={{
-                transitionDelay: animateItems ? `${index * 50}ms` : '0ms',
-                transition: 'all 0.3s ease-out'
+                transition: animateItems ? `all 0.3s ease-out ${index * 50}ms` : 'all 0.3s ease-out 0ms'
             }}
         >
             <span className={`transition-transform duration-200 ${animateItems ? 'scale-100' : 'scale-75'}`}>
@@ -81,7 +82,7 @@ const Sidebar = ({ isOpen }) => {
                         animateItems ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'
                     }`}
                     style={{
-                        transitionDelay: animateItems ? '200ms' : '0ms'
+                        transition: animateItems ? 'all 0.3s ease-out 200ms' : 'all 0.3s ease-out 0ms'
                     }}
                     aria-label="Toggle sidebar compact mode"
                 >
@@ -97,7 +98,7 @@ const Sidebar = ({ isOpen }) => {
                             animateItems ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'
                         }`}
                         style={{
-                            transitionDelay: animateItems ? '150ms' : '0ms'
+                            transition: animateItems ? 'all 0.3s ease-out 150ms' : 'all 0.3s ease-out 0ms'
                         }}>
                             Student Portal
                         </h3>
@@ -117,7 +118,7 @@ const Sidebar = ({ isOpen }) => {
                                 animateItems ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'
                             }`}
                             style={{
-                                transitionDelay: animateItems ? '400ms' : '0ms'
+                                transition: animateItems ? 'all 0.3s ease-out 400ms' : 'all 0.3s ease-out 0ms'
                             }}>
                                 Employer Portal
                             </h3>
@@ -140,7 +141,7 @@ const Sidebar = ({ isOpen }) => {
                             animateItems ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'
                         }`}
                         style={{
-                            transitionDelay: animateItems ? '600ms' : '0ms'
+                            transition: animateItems ? 'all 0.3s ease-out 600ms' : 'all 0.3s ease-out 0ms'
                         }}>
                             Administration
                         </h3>
@@ -149,10 +150,33 @@ const Sidebar = ({ isOpen }) => {
                     </div>
                 )}
 
+                {/* Logout Button */}
+                <div className="mt-auto mb-4 px-4">
+                    <button
+                        onClick={logout}
+                        className={`w-full text-slate-200 hover:text-red-300 hover:bg-red-600/20 font-medium py-2 px-3 rounded-lg transition-all duration-200 border border-transparent hover:border-red-400/30 flex items-center gap-3 transform ${
+                            animateItems
+                                ? 'translate-x-0 opacity-100'
+                                : '-translate-x-4 opacity-0'
+                        }`}
+                        style={{
+                            transition: animateItems ? 'all 0.3s ease-out 800ms' : 'all 0.3s ease-out 0ms'
+                        }}
+                    >
+                        <span className={`transition-transform duration-200 ${animateItems ? 'scale-100' : 'scale-75'}`}>
+                            <LogOut size={18} />
+                        </span>
+                        {!compactMode && (
+                            <span className={`transition-all duration-300 ${animateItems ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0'}`}>
+                                Logout
+                            </span>
+                        )}
+                    </button>
+                </div>
             </nav>
 
                 {/* Subtle bottom accent */}
-                <div className="mt-auto mb-4 mx-4">
+                <div className="mb-4 mx-4">
                     <div className="h-1 bg-gradient-to-r from-blue-500/30 via-indigo-500/50 to-blue-500/30 rounded-full"></div>
                 </div>
             </aside>

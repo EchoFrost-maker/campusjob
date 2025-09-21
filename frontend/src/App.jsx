@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Sidebar from "./components/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./utils/authContext";
 
 import Home from "./pages/home";
 import FindJob from "./pages/findjob";
@@ -44,102 +45,104 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
-        <Navbar toggleSidebar={toggleSidebar} />
-        <div className="flex flex-1 overflow-hidden">
-          <Sidebar isOpen={sidebarOpen} />
-          <div className={`flex-1 overflow-auto transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : ""}`}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/find-job" element={<FindJob />} />
-              <Route path="/job-details/:id" element={<JobDetails />} />
-              <Route path="/apply/:id" element={<Apply />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
+          <Navbar toggleSidebar={toggleSidebar} />
+          <div className="flex flex-1 overflow-hidden">
+            <Sidebar isOpen={sidebarOpen} />
+            <div className={`flex-1 overflow-auto transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : ""}`}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/find-job" element={<FindJob />} />
+                <Route path="/job-details/:id" element={<JobDetails />} />
+                <Route path="/apply/:id" element={<Apply />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
 
-              {/* Protected Routes */}
-              <Route path="/student-dashboard" element={
-                <ProtectedRoute requiredRole="student">
-                  <StudentDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/employer-dashboard" element={
-                <ProtectedRoute requiredRole="employer">
-                  <EmployerDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/joblistings" element={<JobListings />} />
-              <Route path="/student-profile" element={
-                <ProtectedRoute requiredRole="student">
-                  <StudentProfile />
-                </ProtectedRoute>
-              } />
-              <Route path="/my-applications" element={
-                <ProtectedRoute requiredRole="student">
-                  <MyApplications />
-                </ProtectedRoute>
-              } />
-              <Route path="/payment-history" element={
-                <ProtectedRoute requiredRole="student">
-                  <PaymentHistory />
-                </ProtectedRoute>
-              } />
-              <Route path="/employer-profile" element={
-                <ProtectedRoute requiredRole="employer">
-                  <EmployerProfile />
-                </ProtectedRoute>
-              } />
-              <Route path="/post-job" element={
-                <ProtectedRoute requiredRole="employer">
-                  <PostJob />
-                </ProtectedRoute>
-              } />
-              <Route path="/manage-jobs" element={
-                <ProtectedRoute requiredRole="employer">
-                  <ManageJobs />
-                </ProtectedRoute>
-              } />
-              <Route path="/applications-for-job" element={
-                <ProtectedRoute requiredRole="employer">
-                  <ApplicationsForJob />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin-dashboard" element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin-contacts" element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminContacts />
-                </ProtectedRoute>
-              } />
-              <Route path="/employer-applications" element={
-                <ProtectedRoute requiredRole="employer">
-                  <EmployerApplications />
-                </ProtectedRoute>
-              } />
-              <Route path="/student-applications" element={
-                <ProtectedRoute requiredRole="student">
-                  <StudentApplications />
-                </ProtectedRoute>
-              } />
-              <Route path="/skills" element={<Skills />} />
-              <Route path="/departments" element={<Departments />} />
-              <Route path="/student-skills" element={<StudentSkills />} />
-              <Route path="/job-skills" element={<JobSkills />} />
-              <Route path="/applications" element={<Applications />} />
-            </Routes>
+                {/* Protected Routes */}
+                <Route path="/student-dashboard" element={
+                  <ProtectedRoute requiredRole="student">
+                    <StudentDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/employer-dashboard" element={
+                  <ProtectedRoute requiredRole="employer">
+                    <EmployerDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/joblistings" element={<JobListings />} />
+                <Route path="/student-profile" element={
+                  <ProtectedRoute requiredRole="student">
+                    <StudentProfile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/my-applications" element={
+                  <ProtectedRoute requiredRole="student">
+                    <MyApplications />
+                  </ProtectedRoute>
+                } />
+                <Route path="/payment-history" element={
+                  <ProtectedRoute requiredRole="student">
+                    <PaymentHistory />
+                  </ProtectedRoute>
+                } />
+                <Route path="/employer-profile" element={
+                  <ProtectedRoute requiredRole="employer">
+                    <EmployerProfile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/post-job" element={
+                  <ProtectedRoute requiredRole="employer">
+                    <PostJob />
+                  </ProtectedRoute>
+                } />
+                <Route path="/manage-jobs" element={
+                  <ProtectedRoute requiredRole="employer">
+                    <ManageJobs />
+                  </ProtectedRoute>
+                } />
+                <Route path="/applications-for-job" element={
+                  <ProtectedRoute requiredRole="employer">
+                    <ApplicationsForJob />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin-dashboard" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin-contacts" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminContacts />
+                  </ProtectedRoute>
+                } />
+                <Route path="/employer-applications" element={
+                  <ProtectedRoute requiredRole="employer">
+                    <EmployerApplications />
+                  </ProtectedRoute>
+                } />
+                <Route path="/student-applications" element={
+                  <ProtectedRoute requiredRole="student">
+                    <StudentApplications />
+                  </ProtectedRoute>
+                } />
+                <Route path="/skills" element={<Skills />} />
+                <Route path="/departments" element={<Departments />} />
+                <Route path="/student-skills" element={<StudentSkills />} />
+                <Route path="/job-skills" element={<JobSkills />} />
+                <Route path="/applications" element={<Applications />} />
+              </Routes>
+            </div>
           </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 

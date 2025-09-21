@@ -1,56 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Menu, Briefcase, Home, Info, Mail, LogIn, LogOut, User } from "lucide-react";
+import { useAuth } from "../utils/authContext";
 
 const Navbar = ({ toggleSidebar }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [user, setUser] = useState(null);
-
-    useEffect(() => {
-        // Check if we're in a browser environment
-        if (typeof window !== 'undefined') {
-            try {
-                const token = localStorage.getItem('token');
-                const userData = localStorage.getItem('user');
-
-                if (token && userData) {
-                    try {
-                        const parsedUser = JSON.parse(userData);
-                        setIsLoggedIn(true);
-                        setUser(parsedUser);
-                    } catch (parseError) {
-                        console.error('Error parsing user data:', parseError);
-                        // Clear invalid data
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('user');
-                        localStorage.removeItem('role');
-                    }
-                }
-            } catch (error) {
-                console.error('Error accessing localStorage:', error);
-            }
-        }
-    }, []);
-
-    const handleLogout = () => {
-        // Check if we're in a browser environment
-        if (typeof window !== 'undefined') {
-            try {
-                // Clear authentication data
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                localStorage.removeItem('role');
-
-                // Reset state
-                setIsLoggedIn(false);
-                setUser(null);
-
-                // Redirect to home page
-                window.location.href = '/';
-            } catch (error) {
-                console.error('Error during logout:', error);
-            }
-        }
-    };
+    const { isLoggedIn, user, logout } = useAuth();
 
     return (
         <nav className="bg-slate-900/80 backdrop-blur-xl shadow-2xl border-b border-blue-500/20 sticky top-0 z-50">
@@ -133,7 +86,7 @@ const Navbar = ({ toggleSidebar }) => {
 
                             {/* Logout Button */}
                             <button
-                                onClick={handleLogout}
+                                onClick={logout}
                                 className="bg-gradient-to-r from-red-700/80 to-red-600/80 hover:from-red-600/90 hover:to-red-500/90 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 border border-red-400/30 hover:border-red-300/50 backdrop-blur-sm shadow-lg hover:shadow-red-500/25 flex items-center gap-2 group"
                             >
                                 <LogOut
