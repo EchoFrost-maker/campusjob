@@ -103,6 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('jobs/{id}', [JobController::class, 'show']);
     Route::put('jobs/{id}', [JobController::class, 'update']);
     Route::delete('jobs/{id}', [JobController::class, 'destroy']);
+    Route::get('employer/stats', [JobController::class, 'getEmployerStats']);
     Route::apiResource('applications', ApplicationController::class);
 
     // Additional application routes for employers
@@ -122,6 +123,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('statistics', [\App\Http\Controllers\AdminController::class, 'getStatistics']);
         Route::get('employers-with-jobs', [\App\Http\Controllers\AdminController::class, 'getEmployersWithJobs']);
         Route::get('active-employers', [\App\Http\Controllers\AdminController::class, 'getActiveEmployers']);
+
+        // Recent activity routes
+        Route::get('recent-users', [\App\Http\Controllers\AdminController::class, 'getRecentUsers']);
+        Route::get('recent-jobs', [\App\Http\Controllers\AdminController::class, 'getRecentJobs']);
+        Route::get('recent-applications', [\App\Http\Controllers\AdminController::class, 'getRecentApplications']);
 
         // Contact management routes
         Route::get('contacts', [ContactController::class, 'index']);

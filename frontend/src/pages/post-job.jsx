@@ -60,16 +60,17 @@ const PostJob = () => {
 
     const fetchJobStats = async () => {
         try {
-            // This would typically fetch from an API, but for now we'll use mock data
-            // In a real app, you'd have an API endpoint to get employer's job stats
-            setStats({
-                total_jobs: 5,
-                active_jobs: 3,
-                total_applications: 24,
-                views_today: 12
-            });
+            const response = await apiRequest('/employer/stats');
+            setStats(response);
         } catch (error) {
             console.error("Failed to fetch job stats:", error);
+            // Fallback to mock data if API fails
+            setStats({
+                total_jobs: 0,
+                active_jobs: 0,
+                total_applications: 0,
+                views_today: 0
+            });
         }
     };
 

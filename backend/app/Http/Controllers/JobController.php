@@ -108,4 +108,42 @@ class JobController extends Controller
 
         return response()->json(['message' => 'Job deleted']);
     }
+
+    // Get employer job statistics
+    public function getEmployerStats(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->role !== 'employer') {
+            return response()->json(['error' => 'Forbidden: Only employers can view stats'], 403);
+        }
+
+        try {
+            // Get total jobs posted by this employer
+            $totalJobs = Job::where('employer_id', $user->id)->count();
+
+            // Get active jobs (not deleted, assuming no soft deletes for now)
+            $activeJobs = Job::where('employer_id', $user->id)->count();
+
+            // Get total applications for all jobs by this employer
+            $totalApplications = Job::where('employer_id', $user->id)
+                ->withCount('applications')
+                ->get()
+                ->sum('applications_count');
+
+            // Get today's views (this would need a views tracking system)
+            // For now, we'll use a placeholder
+            $viewsToday = 0;
+
+            return response()->json([
+                'total_jobs' => $totalJobs,
+                'active_jobs' => $activeJobs,
+                'total_applications' => $totalApplications,
+                'views_today' => $viewsToday
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to fetch employer stats: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch statistics'], 500);
+        }
+    }
 }

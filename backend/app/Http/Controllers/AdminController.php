@@ -235,4 +235,25 @@ class AdminController extends Controller
 
         return response()->json($employers);
     }
+
+    public function getRecentUsers()
+    {
+        $recentUsers = User::latest()->take(10)->get();
+        return response()->json($recentUsers);
+    }
+
+    public function getRecentJobs()
+    {
+        $recentJobs = Job::with('user')->latest()->take(10)->get();
+        return response()->json($recentJobs);
+    }
+
+    public function getRecentApplications()
+    {
+        $recentApplications = Application::with(['user', 'job'])
+            ->latest()
+            ->take(10)
+            ->get();
+        return response()->json($recentApplications);
+    }
 }

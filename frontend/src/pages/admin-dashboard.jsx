@@ -640,7 +640,7 @@ const AdminDashboard = () => {
                                         </div>
                                         <div className="ml-3">
                                             <p className="text-sm font-medium text-gray-900">New user registrations</p>
-                                            <p className="text-sm text-gray-500">+{recentUsers.length} this week</p>
+                                            <p className="text-sm text-gray-500">+{recentUsers.length} recent users</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center p-3 bg-green-50 rounded-lg">
@@ -649,7 +649,7 @@ const AdminDashboard = () => {
                                         </div>
                                         <div className="ml-3">
                                             <p className="text-sm font-medium text-gray-900">Jobs posted</p>
-                                            <p className="text-sm text-gray-500">+{recentJobs.length} this week</p>
+                                            <p className="text-sm text-gray-500">+{recentJobs.length} recent jobs</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center p-3 bg-purple-50 rounded-lg">
@@ -658,7 +658,7 @@ const AdminDashboard = () => {
                                         </div>
                                         <div className="ml-3">
                                             <p className="text-sm font-medium text-gray-900">Applications submitted</p>
-                                            <p className="text-sm text-gray-500">+{recentApplications.length} this week</p>
+                                            <p className="text-sm text-gray-500">+{recentApplications.length} recent applications</p>
                                         </div>
                                     </div>
                                 </div>
@@ -681,6 +681,14 @@ const AdminDashboard = () => {
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-gray-600">API Response Time</span>
                                         <span className="text-sm text-gray-900">45ms</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-sm text-gray-600">Active Users</span>
+                                        <span className="text-sm text-gray-900">{statistics.total_users || 0}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-sm text-gray-600">Active Jobs</span>
+                                        <span className="text-sm text-gray-900">{statistics.total_jobs || 0}</span>
                                     </div>
                                 </div>
                             </div>
