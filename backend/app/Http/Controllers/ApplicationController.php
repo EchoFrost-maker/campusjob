@@ -283,4 +283,91 @@ class ApplicationController extends Controller
 
         return response()->json($stats);
     }
+
+    // Download resume file
+    public function downloadResume($id)
+    {
+        try {
+            $application = Application::find($id);
+            if (!$application) {
+                \Log::warning("Resume download attempt for non-existent application", ['application_id' => $id]);
+                return response()->json(['message' => 'Application not found'], 404);
+            }
+
+            $user = Auth::user();
+
+            // Check if user is employer and owns the job, or if user is the applicant
+            if ($user->role === 'employer') {
+                if (!$application->job || $application->job->employer_id !== $user->id) {
+                    \Log::warning("Unauthorized resume download attempt by employer", [
+                        'user_id' => $user->id,
+                        'application_id' => $id,
+                        'job_employer_id' => $application->job ? $application->job->employer_id : 'null'
+                    ]);
+                    return response()->json(['message' => 'Unauthorized'], 403);
+                }
+            } elseif ($user->role === 'student') {
+                if ($application->user_id !== $user->id) {
+                    \Log::warning("Unauthorized resume download attempt by student", [
+                        'user_id' => $user->id,
+                        'application_id' => $id,
+                        'application_user_id' => $application->user_id
+                    ]);
+                    return response()->json(['message' => 'Unauthorized'], 403);
+                }
+            } else {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
+
+            // Check if resume exists
+            if (!$application->resume_path) {
+                \Log::info("Resume download attempt for application without resume", ['application_id' => $id]);
+                return response()->json(['message' => 'No resume found for this application'], 404);
+            }
+
+            // Get the full path to the resume file
+            $filePath = storage_path('app/public/' . $application->resume_path);
+
+            // Check if file exists
+            if (!file_exists($filePath)) {
+                \Log::error("Resume file not found on disk", [
+                    'application_id' => $id,
+                    'resume_path' => $application->resume_path,
+                    'file_path' => $filePath
+                ]);
+                return response()->json(['message' => 'Resume file not found'], 404);
+            }
+
+            // Get the original filename
+            $originalFileName = basename($application->resume_path);
+
+            // Log successful download
+            \Log::info("Resume downloaded successfully", [
+                'application_id' => $id,
+                'user_id' => $user->id,
+                'user_role' => $user->role,
+                'file_name' => $originalFileName
+            ]);
+
+            // Return the file as download with proper headers
+            return response()->download($filePath, $originalFileName, [
+                'Content-Type' => mime_content_type($filePath),
+                'Content-Disposition' => 'attachment; filename="' . $originalFileName . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error("Error downloading resume", [
+                'application_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'message' => 'An error occurred while downloading the resume',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

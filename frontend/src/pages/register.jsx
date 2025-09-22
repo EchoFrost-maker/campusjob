@@ -20,10 +20,13 @@ const Register = () => {
             setSuccess("Registration successful! Please login.");
             setName(""); setEmail(""); setPassword("");
         } catch (err) {
+            console.error("Registration error:", err);
             if (err.response && err.response.data && err.response.data.message) {
                 setError(err.response.data.message);
+            } else if (err.message) {
+                setError(err.message);
             } else {
-                setError("Registration failed");
+                setError("Registration failed. Please check your connection and try again.");
             }
         }
     };

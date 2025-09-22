@@ -9,6 +9,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EmployerProfileController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,67 +22,66 @@ use App\Http\Controllers\EmployerProfileController;
 |
 */
 
-use App\Http\Controllers\UserController;
+// Registration - open to everyone
+Route::post('/users/register', function (Request $request) {
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:6',
+        'role' => 'required|in:student,employer,admin',
+    ]);
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => $request->role,
+    ]);
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+        'user' => $user,
+    ]);
+});
+
+// Login - open to everyone
+Route::post('/users/login', function (Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    if (! $user || ! Hash::check($request->password, $user->password)) {
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+        'user' => $user,
+    ]);
+});
 
 Route::prefix('users')->group(function () {
-    // Registration
-    Route::post('/register', function (Request $request) {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-            'role' => 'required|in:student,employer,admin',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-        ]);
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user,
-        ]);
-    });
-
-    // Login
-    Route::post('/login', function (Request $request) {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user,
-        ]);
-    });
-
     // Forgot Password
     Route::post('/forgot-password', [UserController::class, 'forgotPassword']);
 
     // Reset Password
     Route::post('/reset-password', [UserController::class, 'resetPassword']);
+});
 
 // Get Authenticated User Profile
-Route::middleware('auth:sanctum')->get('/me', [UserController::class, 'showProfile']);
+Route::middleware('auth:sanctum')->get('/users/me', [UserController::class, 'showProfile']);
 
 // Update Authenticated User Profile
-Route::middleware('auth:sanctum')->put('/me', [UserController::class, 'updateProfile']);
+Route::middleware('auth:sanctum')->put('/users/me', [UserController::class, 'updateProfile']);
 
 // Employer Profile Routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -89,11 +89,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('employer-profile', [EmployerProfileController::class, 'updateProfile']);
 });
 
-    // Logout
-    Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
-        $request->user()->tokens()->delete();
-        return response()->json(['message' => 'Logged out']);
-    });
+// Logout
+Route::middleware('auth:sanctum')->post('/users/logout', function (Request $request) {
+    $request->user()->tokens()->delete();
+    return response()->json(['message' => 'Logged out']);
 });
 
 // Job Routes

@@ -3,7 +3,8 @@ import {
     getApplications,
     getApplicationsForJob,
     updateApplicationStatus,
-    getApplicationStats
+    getApplicationStats,
+    downloadResume
 } from "../utils/api";
 import {
     FileText,
@@ -193,6 +194,39 @@ const EmployerApplications = () => {
         }
     };
 
+    const handleDownloadResume = async (applicationId) => {
+        try {
+            const response = await downloadResume(applicationId);
+
+            // Get filename from response headers or use default
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = `resume_${applicationId}.pdf`;
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="([^"]*)"/) || contentDisposition.match(/filename=([^;]*)/);
+                if (filenameMatch) {
+                    filename = filenameMatch[1].trim();
+                }
+            }
+
+            // Create blob and download
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+
+            // Clean up
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error("Failed to download resume:", error);
+            alert('Failed to download resume. Please try again.');
+        }
+    };
+
     const getStatusColor = (status) => {
         switch (status) {
             case 'applied': return 'bg-blue-100 text-blue-800';
@@ -261,7 +295,10 @@ const EmployerApplications = () => {
             <div className="mt-4 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                     {application.resume_path && (
-                        <button className="flex items-center px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200">
+                        <button
+                            onClick={() => handleDownloadResume(application.id)}
+                            className="flex items-center px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                        >
                             <Download className="w-4 h-4 mr-1" />
                             Resume
                         </button>

@@ -124,6 +124,33 @@ const EmployerDashboard = () => {
         }
     };
 
+    const handleDeleteJob = async (jobId) => {
+        if (!window.confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}/jobs/${jobId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Remove the job from local state
+            setJobs(jobs.filter(job => job.id !== jobId));
+            alert('Job deleted successfully!');
+        } catch (error) {
+            console.error("Failed to delete job:", error);
+            alert('Failed to delete job. Please try again.');
+        }
+    };
+
     const JobCard = ({ job }) => (
         <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
             <div className="flex items-start justify-between">
@@ -169,15 +196,24 @@ const EmployerDashboard = () => {
 
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <div className="flex items-center space-x-2">
-                    <button className="flex items-center px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200">
+                    <button
+                        onClick={() => window.open(`/jobdetails/${job.id}`, '_blank')}
+                        className="flex items-center px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                    >
                         <Eye className="w-4 h-4 mr-1" />
                         View Details
                     </button>
-                    <button className="flex items-center px-3 py-1 text-sm text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200">
+                    <button
+                        onClick={() => window.location.href = `/manage-jobs?edit=${job.id}`}
+                        className="flex items-center px-3 py-1 text-sm text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
+                    >
                         <Edit3 className="w-4 h-4 mr-1" />
                         Edit Job
                     </button>
-                    <button className="flex items-center px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200">
+                    <button
+                        onClick={() => handleDeleteJob(job.id)}
+                        className="flex items-center px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                    >
                         <Trash2 className="w-4 h-4 mr-1" />
                         Delete
                     </button>

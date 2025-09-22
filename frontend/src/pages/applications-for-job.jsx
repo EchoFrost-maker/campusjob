@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import {
     apiRequest,
     getApplicationsForJob,
-    updateApplicationStatus
+    updateApplicationStatus,
+    downloadResume
 } from "../utils/api";
 import {
     FileText,
@@ -112,6 +113,50 @@ const ApplicationsForJob = () => {
         }
     };
 
+    const handleDownloadResume = async (applicationId) => {
+        try {
+            console.log('Starting resume download for application:', applicationId);
+            console.log('Auth token:', localStorage.getItem('token'));
+
+            const response = await downloadResume(applicationId);
+
+            console.log('Download response received:', response);
+
+            // Get filename from response headers or use default
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = `resume_${applicationId}.pdf`;
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="([^"]*)"/) || contentDisposition.match(/filename=([^;]*)/);
+                if (filenameMatch) {
+                    filename = filenameMatch[1].trim();
+                }
+            }
+
+            console.log('Downloading file:', filename);
+
+            // Create blob and download
+            const blob = await response.blob();
+            console.log('Blob created:', blob.size, 'bytes');
+
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+
+            // Clean up
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            console.log('Resume download completed successfully');
+
+        } catch (error) {
+            console.error("Failed to download resume:", error);
+            alert(`Failed to download resume: ${error.message}`);
+        }
+    };
+
     const ApplicationCard = ({ application }) => (
         <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
             <div className="flex items-start justify-between">
@@ -160,7 +205,10 @@ const ApplicationsForJob = () => {
             <div className="mt-4 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                     {application.resume_path && (
-                        <button className="flex items-center px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200">
+                        <button
+                            onClick={() => handleDownloadResume(application.id)}
+                            className="flex items-center px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                        >
                             <Download className="w-4 h-4 mr-1" />
                             Resume
                         </button>

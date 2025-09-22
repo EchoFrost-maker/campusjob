@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
@@ -170,3 +170,45 @@ export const updateEmployerProfile = (profileData) => apiRequest('/users/employe
     method: 'PUT',
     body: JSON.stringify(profileData),
 });
+
+// Resume download function
+export const downloadResume = async (applicationId) => {
+    const url = `${API_BASE_URL}/applications/${applicationId}/download-resume`;
+    const headers = {
+        ...getAuthHeaders(),
+        'Accept': 'application/octet-stream',
+    };
+
+    console.log('Downloading resume from:', url);
+    console.log('Headers:', headers);
+
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: headers,
+        credentials: 'include' // Include cookies for authentication
+    });
+
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = `Failed to download resume: ${response.status} ${response.statusText}`;
+        try {
+            const errorData = JSON.parse(errorText);
+            if (errorData.error) {
+                errorMessage += ` - ${errorData.error}`;
+            } else if (errorData.message) {
+                errorMessage += ` - ${errorData.message}`;
+            }
+        } catch (e) {
+            if (errorText) {
+                errorMessage += ` - ${errorText}`;
+            }
+        }
+        console.error('Download error:', errorMessage);
+        throw new Error(errorMessage);
+    }
+
+    return response;
+};
