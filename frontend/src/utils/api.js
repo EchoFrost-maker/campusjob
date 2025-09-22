@@ -164,9 +164,9 @@ export const updateApplicationStatus = (applicationId, statusData) => apiRequest
 export const getApplicationStats = () => apiRequest('/applications/stats/overview');
 
 // Employer Profile API functions
-export const getEmployerProfile = () => apiRequest('/users/employer-profile');
+export const getEmployerProfile = () => apiRequest('/employer-profile');
 
-export const updateEmployerProfile = (profileData) => apiRequest('/users/employer-profile', {
+export const updateEmployerProfile = (profileData) => apiRequest('/employer-profile', {
     method: 'PUT',
     body: JSON.stringify(profileData),
 });
